@@ -12,3 +12,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE "include/Iridium/libraries.hpp
 target_include_directories(${PROJECT_NAME} PUBLIC "include" "include/Iridium")
 
 # PROJECT CONFIG BELOW THIS LINE
+
+target_include_directories(${PROJECT_NAME} PUBLIC "include/Filigree")
+add_subdirectory("src/Iridium")
+add_subdirectory("src/Filigree")
