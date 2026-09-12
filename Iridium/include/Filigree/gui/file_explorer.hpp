@@ -17,10 +17,12 @@ namespace filigree::gui {
 		void render(ir::render::VertexRenderer& renderer) const;
 
 		std::filesystem::path activeFolder() const;
-		std::filesystem::path selectedFile() const;
+		std::optional<std::filesystem::path> selectedPath() const;
 
 		void moveToParent();
 		void setPath(std::filesystem::path path);
+
+		void processFileSelection();
 
 	private:
 	//	void createMinimizeButton();
@@ -28,12 +30,21 @@ namespace filigree::gui {
 	//	void createTitle();
 
 		void createPathBar();
+		void createFileFields();
 		static std::string concisePath(std::filesystem::path& path);
 
-		std::unique_ptr<ir::vgui::FramedElement> fileExplorer_;
-		filigree::EventQueue* evtQueue_;
-		std::filesystem::path activeDir_;
-		unsigned int listOffset_;
+		void populateFileList();
+		void updateFileList();
+
+		std::unique_ptr<ir::vgui::FramedElement> fileExplorer_ {};
+		filigree::EventQueue* evtQueue_ { nullptr };
+		std::filesystem::path activeDir_ {};
+		int listOffset_ { 0 };
+
+		std::vector<std::filesystem::path> pathList_ {};
+		std::optional<std::filesystem::path> selectedPath_ {};
+
+		std::unique_ptr<ir::render::Rectangle> selectionRect_ {};
 	};
 }
 

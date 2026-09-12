@@ -8,6 +8,7 @@ namespace filigree {
 	enum class Event : unsigned char {
 		DEBUG, // Testing purposes
 
+		SELECT_FILE,
 		MOVE_TO_PARENT_FOLDER,
 
 		MINIMIZE, // Minimize window

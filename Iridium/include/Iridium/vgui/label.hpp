@@ -45,7 +45,7 @@ namespace ir {
 
 		protected:
 			std::unique_ptr<ir::render::Text> label_;
-			Anchor anchor_;
+			Anchor anchor_ { Anchor::NONE };
 		};
 	}
 }

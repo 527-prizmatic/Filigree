@@ -9,13 +9,13 @@
 
 int main() {
 	ir::log::startSession();
-	try {
+//	try {
 		ir::render::Text::loadModels();
 		ir::Application app;
 		app.run<EntryState>();
-	}
-	catch (...) {
-		LOG_ERROR("Something terrible happened (caught unhandled exception, exiting)");
-	}
+//	}
+//	catch (...) {
+//		LOG_ERROR("Something terrible happened (caught unhandled exception, exiting)");
+//	}
 	ir::log::endSession();
 }

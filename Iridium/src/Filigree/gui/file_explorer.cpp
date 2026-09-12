@@ -7,6 +7,17 @@
 #include <vgui/factory.hpp>
 
 namespace filigree::gui {
+	namespace {
+		auto isImage = [](std::filesystem::path file) {
+			if (std::filesystem::is_directory(file)) {
+				return false;
+			}
+			std::string ext { file.extension().string() };
+			std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+			return ext == ".png" || ext == ".jpg" || ext == ".bmp";
+		};
+	}
+
 	FileExplorer::FileExplorer(filigree::EventQueue& evtQueue) {
 		evtQueue_ = &evtQueue;
 		activeDir_ = std::filesystem::current_path();
@@ -20,16 +31,34 @@ namespace filigree::gui {
 				.setSize(ir::Vector { 479.f, 689.f })
 				.setPosition(ir::Vector { 1.f, 30.f });
 
-	//		createMinimizeButton();
-	//		createExitButton();
-	//		createTitle();
 			createPathBar();
+			createFileFields();
+
+			populateFileList();
+			updateFileList();
 		}
+
+		selectionRect_ = std::make_unique<ir::render::Rectangle>();
+		selectionRect_->setSize(ir::Vector { 475.f, 26.f })
+			.setPosition(ir::Vector { 0.f, 60.f })
+			.setColor(sf::Color::Transparent)
+			.setMode(ir::render::Mode::WIREFRAME);
 	}
 
 	void FileExplorer::processEvent(const sf::Event& evt) {
 		if (fileExplorer_) {
 			fileExplorer_->processEvent(evt);
+		}
+
+		if (auto scroll = evt.getIf<sf::Event::MouseWheelScrolled>()) {
+			listOffset_ -= scroll->delta;
+			if (listOffset_ < 0 || pathList_.size() <= 22) {
+				listOffset_ = 0;
+			}
+			else if (listOffset_ > static_cast<int>(pathList_.size() - 22)) {
+				listOffset_ = pathList_.size() - 22;
+			}
+			updateFileList();
 		}
 	}
 
@@ -46,14 +75,34 @@ namespace filigree::gui {
 					buttonParent->getChild<ir::vgui::Icon>("Icon")->setFrameColor(sf::Color(128u, 128u, 128u));
 				}
 			}
+		}
 
-			fileExplorer_->update(mouseInput);
+		if (fileExplorer_->update(mouseInput)) {
+			int id { static_cast<int>((mouseInput.cursorPosition().y - fileExplorer_->position().y) / 30.f) - 1 };
+			id += listOffset_;
+			if (pathList_.size() > static_cast<unsigned int>(id)) {
+				selectedPath_ = pathList_[id];
+
+				selectionRect_->setColor(sf::Color {64u, 160u, 255u })
+					.setPosition(fileExplorer_->position() + ir::Vector { 2.f, static_cast<float>(id - listOffset_ + 1) * 30.f + 2.f });
+			}
+			else {
+				selectedPath_ = {};
+				selectionRect_->setColor(sf::Color::Transparent);
+			}
+		}
+		else {
+			selectedPath_ = {};
+			selectionRect_->setColor(sf::Color::Transparent);
 		}
 	}
 
 	void FileExplorer::render(ir::render::VertexRenderer& renderer) const {
 		if (fileExplorer_) {
 			fileExplorer_->render(renderer);
+		}
+		if (selectionRect_) {
+			selectionRect_->render(renderer);
 		}
 	}
 
@@ -69,6 +118,63 @@ namespace filigree::gui {
 		auto label { fileExplorer_->getChild("PathBar")->getChild<ir::vgui::Label>("PathLabel") };
 		if (label) {
 			label->setLabel(concisePath(activeDir_));
+		}
+
+		listOffset_ = 0;
+		populateFileList();
+		updateFileList();
+	}
+
+	void FileExplorer::processFileSelection() {
+		if (selectedPath_.has_value()) {
+			if (std::filesystem::is_directory(*selectedPath_)) {
+				setPath(*selectedPath_);
+			}
+		}
+	}
+
+	void FileExplorer::populateFileList() {
+		pathList_.clear();
+
+		for (auto file : std::filesystem::directory_iterator { activeDir_ }) {
+			if (std::filesystem::is_directory(file)) {
+				pathList_.push_back(file);
+			}
+		}
+		
+		for (auto file : std::filesystem::directory_iterator { activeDir_ }) {
+			if (!std::filesystem::is_directory(file) && isImage(file)) {
+				pathList_.push_back(file);
+			}
+		}
+		
+		for (auto file : std::filesystem::directory_iterator { activeDir_ }) {
+			if (!std::filesystem::is_directory(file) && !isImage(file)) {
+				pathList_.push_back(file);
+			}
+		}
+	}
+
+	void FileExplorer::updateFileList() {
+		for (size_t i = 0; i < 22; i++) { /// 690 px / 30 px per field
+			auto field { fileExplorer_->getChild(std::string { "Field" } + std::to_string(i))->getChild<ir::vgui::Label>("Label") };
+			if (i + listOffset_ < pathList_.size()) {
+				auto path { pathList_[i + listOffset_] };
+				field->setLabel(path.filename().string());
+
+				if (std::filesystem::is_directory(path)) {
+					field->setColor(sf::Color { 128u, 160u, 224u });
+				}
+				else if (isImage(path)) {
+					field->setColor(sf::Color::White);
+				}
+				else {
+					field->setColor(sf::Color { 128u, 128u, 128u });
+				}
+			}
+			else {
+				field->setLabel("");
+			}
 		}
 	}
 
@@ -104,6 +210,25 @@ namespace filigree::gui {
 		fileExplorer_->addChildElement("PathBar", std::move(bar));
 	}
 
+	void FileExplorer::createFileFields() {
+		for (size_t i = 0; i < 22; i++) { /// 690 px / 30 px per field
+			auto el { std::make_unique<ir::vgui::FramedElement>() };
+			el->setPosition(ir::Vector { 0.f, static_cast<float>(i + 1) * 30.f })
+				.setSize(ir::Vector { 479.f, 30.f })
+				.setColors(sf::Color { 0u, 128u, 255u, 32u }, i % 2 ? sf::Color { 255u, 255u, 255u, 8u } : sf::Color::Transparent);
+
+			auto label { std::make_unique<ir::vgui::Label>() };
+			label->setScale(15.f)
+				.setPosition(ir::Vector { 6.f, 5.f });
+
+			el->addChildElement("Label", std::move(label));
+
+			el->registerClickEvent([&]() { evtQueue_->add(filigree::Event::SELECT_FILE); });
+			
+			fileExplorer_->addChildElement(std::string { "Field" } + std::to_string(i), std::move(el));
+		}
+	}
+
 	std::string FileExplorer::concisePath(std::filesystem::path& path) {
 		constexpr static std::string separator { " / " };
 		std::string concise { };
@@ -128,8 +253,6 @@ namespace filigree::gui {
 		}
 		concise += nameOrRoot(path) + separator;
 
-		LOG_INFO(path.string());
-		LOG_INFO(concise);
 		return concise;
 	}
 }

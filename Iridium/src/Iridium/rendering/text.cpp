@@ -124,8 +124,11 @@ namespace ir::render {
 		else if (c == '/') {
 			sstr << "slash";
 		}
-		else {
+		else if (c == ' ') {
 			sstr << "none";
+		}
+		else {
+			sstr << "underscore";
 		}
 		return sstr.str();
 	}

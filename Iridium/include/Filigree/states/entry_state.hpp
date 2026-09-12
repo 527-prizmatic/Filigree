@@ -56,6 +56,12 @@ public:
 						break;
 					}
 
+					case filigree::Event::SELECT_FILE: {
+						fileExplorer_->processFileSelection();
+
+						break;
+					}
+
 					case filigree::Event::MOVE_TO_PARENT_FOLDER: {
 						LOG_INFO("Moving to parent folder");
 						fileExplorer_->moveToParent();
