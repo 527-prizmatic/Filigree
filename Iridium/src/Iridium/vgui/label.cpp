@@ -4,8 +4,6 @@
 
 namespace ir::vgui {
 	Label::Label(std::string text) {
-		ir::render::Text::loadModels();
-
 		label_ = std::make_unique<ir::render::Text>();
 		if (label_) {
 			label_->setString(text);
@@ -67,10 +65,11 @@ namespace ir::vgui {
 		renderChildren(renderer);
 	}
 
-	void Label::setScale(float scale) {
+	ir::vgui::Label& Label::setScale(float scale) {
 		if (label_) {
 			label_->setScale(scale);
 		}
+		return *this;
 	}
 
 	float Label::scale() {
@@ -80,10 +79,11 @@ namespace ir::vgui {
 		return -1.f;
 	}
 
-	void Label::setLabel(std::string text) {
+	ir::vgui::Label& Label::setLabel(std::string text) {
 		if (label_) {
 			label_->setString(text);
 		}
+		return *this;
 	}
 
 	std::string Label::label() const {
@@ -93,10 +93,11 @@ namespace ir::vgui {
 		return "ERROR_LABEL";
 	}
 
-	void Label::setColor(sf::Color clr) {
+	ir::vgui::Label& Label::setColor(sf::Color clr) {
 		if (label_) {
 			label_->setColor(clr);
 		}
+		return *this;
 	}
 	
 	sf::Color Label::color() const {
@@ -106,17 +107,19 @@ namespace ir::vgui {
 		return sf::Color::Transparent;
 	}
 
-	void Label::setAnchor(Label::Anchor anchor) {
+	ir::vgui::Label& Label::setAnchor(Label::Anchor anchor) {
 		anchor_ = anchor;
+		return *this;
 	}
 
 	Label::Anchor Label::anchor() const {
 		return anchor_;
 	}
 
-	void Label::setPosition(ir::Vector pos) {
+	ir::vgui::Element& Label::setPosition(ir::Vector pos) {
 		if (parent_ == nullptr) {
 			pos_ = pos;
 		}
+		return *this;
 	}
 }

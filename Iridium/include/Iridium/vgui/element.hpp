@@ -53,30 +53,30 @@ namespace ir {
 		//	Element* operator[](const char* key) const;
 
 			/// @brief Adds a child to this element and assigns it the given key for later lookup.
-			void addChildElement(std::string key, std::unique_ptr<ir::vgui::Element> child);
+			ir::vgui::Element& addChildElement(std::string key, std::unique_ptr<ir::vgui::Element> child);
 		//	void removeChildElement(std::string key);
 		//	void removeChildElement(ir::vgui::Element* child);
 		//	void removeParent();
 
-			virtual void setPosition(ir::Vector pos); ///< @brief Sets position relative to the parent (or the window if there is none)
-			virtual void setSize(ir::Vector size); ///< @brief Sets element size, in pixels
+			virtual ir::vgui::Element& setPosition(ir::Vector pos); ///< @brief Sets position relative to the parent (or the window if there is none)
+			virtual ir::vgui::Element& setSize(ir::Vector size); ///< @brief Sets element size, in pixels
 
 			[[nodiscard]] ir::Vector position() const; ///< @return Position relative to the parent (or the window if there is none)
 			[[nodiscard]] ir::Vector size() const; ///< @return Element size, in pixels
 			[[nodiscard]] ir::Vector absolutePosition() const; ///< @return Window-adjusted position (recursively computed as the sum of all parents' relative positions)
 
-			void setBackgroundColor(sf::Color clr); ///< @brief Sets color of solid background
+			ir::vgui::Element& setBackgroundColor(sf::Color clr); ///< @brief Sets color of solid background
 			[[nodiscard]] sf::Color backgroundColor() const;
 			
-			void setFrameColor(sf::Color clr); ///< @brief Sets color of outer frame
+			ir::vgui::Element& setFrameColor(sf::Color clr); ///< @brief Sets color of outer frame
 			[[nodiscard]] sf::Color frameColor() const;
 
-			void setColors(sf::Color frame, sf::Color background); ///< @brief Sets colors for outer frame and solid background in one function call
+			ir::vgui::Element& setColors(sf::Color frame, sf::Color background); ///< @brief Sets colors for outer frame and solid background in one function call
 			static void setDebugMode(bool debug); ///< @brief Enables or disables debug mode (forced frame/background rendering)
 			
-			void registerClickEvent(ir::vgui::ClickEvent event);
-			void registerHoverEvent(ir::vgui::ClickEvent event);
-			void registerReleaseEvent(ir::vgui::ClickEvent event);
+			ir::vgui::Element& registerClickEvent(ir::vgui::ClickEvent event);
+			ir::vgui::Element& registerHoverEvent(ir::vgui::ClickEvent event);
+			ir::vgui::Element& registerReleaseEvent(ir::vgui::ClickEvent event);
 			void processEvent(const sf::Event& evt); ///< @brief Recursively processes SFML events for the element, as well as its children.
 
 		protected:

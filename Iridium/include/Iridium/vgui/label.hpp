@@ -28,19 +28,19 @@ namespace ir {
 			virtual bool update(ir::input::Mouse& mouse) override;
 			virtual void render(ir::render::VertexRenderer& renderer) const override;
 
-			void setScale(float scale);
+			ir::vgui::Label& setScale(float scale);
 			float scale();
 
-			void setLabel(std::string text);
+			ir::vgui::Label& setLabel(std::string text);
 			[[nodiscard]] std::string label() const;
 
-			void setColor(sf::Color clr);
+			ir::vgui::Label& setColor(sf::Color clr);
 			[[nodiscard]] sf::Color color() const;
 
-			void setAnchor(Anchor anchor);
+			ir::vgui::Label& setAnchor(Anchor anchor);
 			[[nodiscard]] Anchor anchor() const;
 			
-			virtual void setPosition(ir::Vector pos) override;
+			virtual ir::vgui::Element& setPosition(ir::Vector pos) override;
 
 		protected:
 			std::unique_ptr<ir::render::Text> label_;

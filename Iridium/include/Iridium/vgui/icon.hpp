@@ -20,10 +20,10 @@ namespace ir {
 			virtual bool update(ir::input::Mouse& mouse) override;
 			virtual void render(ir::render::VertexRenderer& renderer) const override;
 
-			void setScale(float scale);
+			ir::vgui::Icon& setScale(float scale);
 			[[nodiscard]] inline float scale() const { return scale_; }
 
-			void setIcon(std::filesystem::path text);
+			ir::vgui::Icon& setIcon(std::filesystem::path text);
 
 		private:
 			std::unique_ptr<ir::render::ModelRenderer> modelRenderer_;

@@ -23,18 +23,20 @@ namespace ir::vgui {
 		}
 	}
 
-	void Icon::setScale(float scale) {
+	ir::vgui::Icon& Icon::setScale(float scale) {
 		scale_ = scale;
 		if (modelRenderer_) {
 			unsigned int modelSize { std::max(modelRenderer_->model().height(), modelRenderer_->model().width()) };
 			modelRenderer_->setScale(scale_ / static_cast<float>(modelSize));
 		}
+		return *this;
 	}
 
-	void Icon::setIcon(std::filesystem::path filename) {
+	ir::vgui::Icon& Icon::setIcon(std::filesystem::path filename) {
 		if (modelRenderer_) {
 			modelRenderer_->setModel(ir::render::Model::loadFromFile(filename));
 			setScale(scale_);
 		}
+		return *this;
 	}
 }

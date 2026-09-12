@@ -16,9 +16,9 @@ namespace filigree::gui {
 			LOG_ERROR("Could not create title bar!!");
 		}
 		else {
-			titleBar_->setColors(sf::Color::White, sf::Color { 8u, 0u, 16u });
-			titleBar_->setSize(ir::Vector { 1279.f, 30.f });
-			titleBar_->setPosition(ir::Vector { 1.f, 0.f });
+			titleBar_->setColors(sf::Color::White, sf::Color { 8u, 0u, 16u })
+				.setSize(ir::Vector { 1279.f, 30.f })
+				.setPosition(ir::Vector { 1.f, 0.f });
 
 			createMinimizeButton();
 			createExitButton();
@@ -40,15 +40,15 @@ namespace filigree::gui {
 	
 	void TitleBar::createMinimizeButton() {
 		auto buttonMinimize { std::make_unique<ir::vgui::FramedElement>() };
-		buttonMinimize->setPosition(ir::Vector { 1223.f, 2.f });
-		buttonMinimize->setSize(ir::Vector { 26.f, 26.f });
-		buttonMinimize->setColors(sf::Color(32u, 224u, 192u, 255u), sf::Color(32u, 224u, 192u, 32u));
-		buttonMinimize->registerClickEvent([&]() { evtQueue_->add(filigree::Event::MINIMIZE); });
+		buttonMinimize->setPosition(ir::Vector { 1223.f, 2.f })
+			.setSize(ir::Vector { 26.f, 26.f })
+			.setColors(sf::Color(32u, 224u, 192u, 255u), sf::Color(32u, 224u, 192u, 32u))
+			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::MINIMIZE); });
 
 		auto icon { std::make_unique<ir::vgui::Icon>("tools\\line") };
-		icon->setFrameColor(sf::Color(32u, 224u, 192u, 255u));
-		icon->setScale(22.f);
-		icon->setPosition(ir::Vector { 2.f, 19.f });
+		icon->setScale(22.f)
+			.setFrameColor(sf::Color(32u, 224u, 192u, 255u))
+			.setPosition(ir::Vector { 2.f, 19.f });
 
 		buttonMinimize->addChildElement("Icon", std::move(icon));
 		titleBar_->addChildElement("ButtonMinimize", std::move(buttonMinimize));
@@ -56,15 +56,15 @@ namespace filigree::gui {
 
 	void TitleBar::createExitButton() {
 		auto buttonExit { std::make_unique<ir::vgui::FramedElement>() };
-		buttonExit->setPosition(ir::Vector { 1251.f, 2.f });
-		buttonExit->setSize(ir::Vector { 26.f, 26.f });
-		buttonExit->setColors(sf::Color(224u, 48u, 92u, 255u), sf::Color(224u, 48u, 92u, 32u));
-		buttonExit->registerClickEvent([&]() { evtQueue_->add(filigree::Event::EXIT); });
+		buttonExit->setPosition(ir::Vector { 1251.f, 2.f })
+			.setSize(ir::Vector { 26.f, 26.f })
+			.setColors(sf::Color(224u, 48u, 92u, 255u), sf::Color(224u, 48u, 92u, 32u))
+			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::EXIT); });
 
 		auto icon { std::make_unique<ir::vgui::Icon>("tools\\cross") };
-		icon->setFrameColor(sf::Color(224u, 48u, 92u, 255u));
-		icon->setScale(21.f);
-		icon->setPosition(ir::Vector { 2.f, 2.f });
+		icon->setScale(21.f)
+			.setFrameColor(sf::Color(224u, 48u, 92u, 255u))
+			.setPosition(ir::Vector { 2.f, 2.f });
 
 		buttonExit->addChildElement("Icon", std::move(icon));
 		titleBar_->addChildElement("ButtonExit", std::move(buttonExit));
