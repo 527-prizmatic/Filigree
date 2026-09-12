@@ -130,6 +130,9 @@ namespace filigree::gui {
 			if (std::filesystem::is_directory(*selectedPath_)) {
 				setPath(*selectedPath_);
 			}
+			else if (isImage(*selectedPath_)) {
+				evtQueue_->add(filigree::Event::QUEUE_FILE_PROCESSING);
+			}
 		}
 	}
 

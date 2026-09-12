@@ -6,12 +6,14 @@
 #include "events.hpp"
 #include "gui/title_bar.hpp"
 #include "gui/file_explorer.hpp"
+#include "image_processor.hpp"
 
 class EntryState : public ir::StateBase<EntryState> {
 public:
 	void onInitialize() {
 		titleBar_ = std::make_unique<filigree::gui::TitleBar>(evtQueue_);
 		fileExplorer_ = std::make_unique<filigree::gui::FileExplorer>(evtQueue_);
+		processor_ = std::make_unique<filigree::Processor>(evtQueue_);
 	}
 
 	void onReceiveEvent(const sf::Event& event) {
@@ -30,6 +32,10 @@ public:
 		}
 
 		processEvents();
+
+		if (context_->mouse->isPressed(sf::Mouse::Button::Right)) {
+			evtQueue_.add(filigree::Event::START_FILE_PROCESSING);
+		}
 	}
 
 	void onRender() {
@@ -68,6 +74,40 @@ public:
 						break;
 					}
 
+					case filigree::Event::QUEUE_FILE_PROCESSING: {
+						auto path { fileExplorer_->selectedPath() };
+						if (path.has_value()) {
+							int id { -1 };
+							for (size_t i = 0; i < processingQueue_.size(); i++) {
+								if (processingQueue_[i] == *path) {
+									id = i;
+									break;
+								}
+							}
+
+							if (id == -1) {
+								processingQueue_.push_back(*path);
+							}
+							else {
+								processingQueue_.erase(processingQueue_.begin() + id);
+							}
+						}
+
+						for (auto& path : processingQueue_) {
+							LOG_INFO(path.string());
+						}
+
+						break;
+					}
+
+					case filigree::Event::START_FILE_PROCESSING: {
+						if (processor_) {
+							processor_->process(processingQueue_, std::filesystem::current_path());
+						}
+
+						break;
+					}
+
 					case filigree::Event::MINIMIZE: {
 						context_->appWindow->minimize();
 
@@ -88,6 +128,10 @@ private:
 
 	std::unique_ptr<filigree::gui::TitleBar> titleBar_;
 	std::unique_ptr<filigree::gui::FileExplorer> fileExplorer_;
+
+	std::unique_ptr<filigree::Processor> processor_;
+
+	std::vector<std::filesystem::path> processingQueue_;
 
 };
 

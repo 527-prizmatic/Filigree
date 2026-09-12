@@ -11,6 +11,9 @@ namespace filigree {
 		SELECT_FILE,
 		MOVE_TO_PARENT_FOLDER,
 
+		QUEUE_FILE_PROCESSING,
+		START_FILE_PROCESSING,
+
 		MINIMIZE, // Minimize window
 		EXIT, // Exit application
 	};

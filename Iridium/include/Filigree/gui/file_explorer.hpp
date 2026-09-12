@@ -17,7 +17,7 @@ namespace filigree::gui {
 		void render(ir::render::VertexRenderer& renderer) const;
 
 		std::filesystem::path activeFolder() const;
-		std::optional<std::filesystem::path> selectedPath() const;
+		std::optional<std::filesystem::path> selectedPath() const { return selectedPath_; }
 
 		void moveToParent();
 		void setPath(std::filesystem::path path);
