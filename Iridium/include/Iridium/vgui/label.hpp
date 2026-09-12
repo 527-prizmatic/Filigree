@@ -16,6 +16,7 @@ namespace ir {
 		class Label : public Element {
 		public:
 			enum class Anchor : unsigned char {
+				NONE,
 				LEFT,
 				RIGHT,
 				TOP,

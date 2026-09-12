@@ -20,6 +20,8 @@ namespace ir::vgui {
 			ir::Vector boundingBoxSize { label_->boundingBoxSize() };
 			switch (anchor_) {
 				default:
+					relativePos = pos_;
+					break;
 				case Anchor::LEFT: {
 					relativePos.x = -boundingBoxSize.x - 5.f;
 					relativePos.y = parent_->size().y * .5f - boundingBoxSize.y * .5f;

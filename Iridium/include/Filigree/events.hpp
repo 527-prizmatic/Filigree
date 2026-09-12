@@ -8,6 +8,8 @@ namespace filigree {
 	enum class Event : unsigned char {
 		DEBUG, // Testing purposes
 
+		MOVE_TO_PARENT_FOLDER,
+
 		MINIMIZE, // Minimize window
 		EXIT, // Exit application
 	};

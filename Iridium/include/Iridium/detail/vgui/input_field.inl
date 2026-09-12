@@ -131,13 +131,17 @@ namespace ir::vgui {
 
 #pragma region Mutators and accessors
 	template <typename T>
-	void InputField<T>::setValue(T val) { value_ = val; }
+	ir::vgui::InputField<T>& InputField<T>::setValue(T val) {
+		value_ = val;
+		
+		return *this;
+	}
 
 	template <typename T>
 	T InputField<T>::value() const { return value_; }
 
 	template <typename T>
-	void InputField<T>::setMaxChars(unsigned int max) { 
+	ir::vgui::InputField<T>& InputField<T>::setMaxChars(unsigned int max) { 
 		maxChars_ = max;
 		
 		std::string val { std::to_string(value_) };
@@ -145,25 +149,30 @@ namespace ir::vgui {
 			val.erase(val.end() - 1);
 		}
 		std::from_chars(val.data(), val.data() + val.size(), value_);
+		
+		return *this;
 	}
 	
 	template <>
-	inline void InputField<std::string>::setMaxChars(unsigned int max) { 
+	inline ir::vgui::InputField<std::string>& InputField<std::string>::setMaxChars(unsigned int max) { 
 		maxChars_ = max;
 		
 		while (value_.length() > maxChars_) {
 			value_.erase(value_.end() - 1);
 		}
+
+		return *this;
 	}
 
 	template <typename T>
 	unsigned int InputField<T>::getMaxChars() const { return maxChars_; }
 
 	template <typename T>
-	void InputField<T>::setScale(float scale) {
+	ir::vgui::InputField<T>& InputField<T>::setScale(float scale) {
 		if (label_) {
 			label_->setScale(scale);
 		}
+		return *this;
 	}
 
 	template <typename T>
@@ -175,10 +184,11 @@ namespace ir::vgui {
 	}
 
 	template <typename T>
-	void InputField<T>::setLabelColor(sf::Color clr) {
+	ir::vgui::InputField<T>& InputField<T>::setLabelColor(sf::Color clr) {
 		if (label_) {
 			label_->setColor(clr);
 		}
+		return *this;
 	}
 	
 	template <typename T>
@@ -190,13 +200,19 @@ namespace ir::vgui {
 	}
 
 	template <typename T>
-	void InputField<T>::setColorUnfocused(sf::Color clr) { clrUnfocused_ = clr; }
+	ir::vgui::InputField<T>& InputField<T>::setColorUnfocused(sf::Color clr) {
+		clrUnfocused_ = clr;
+		return *this;
+	}
 	
 	template <typename T>
 	sf::Color InputField<T>::colorUnfocused() const { return clrUnfocused_; }
 
 	template <typename T>
-	void InputField<T>::setColorFocused(sf::Color clr) { clrFocused_ = clr; }
+	ir::vgui::InputField<T>& InputField<T>::setColorFocused(sf::Color clr) {
+		clrFocused_ = clr;
+		return *this;
+	}
 	
 	template <typename T>
 	sf::Color InputField<T>::colorFocused() const { return clrFocused_; }
