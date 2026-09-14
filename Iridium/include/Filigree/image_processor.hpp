@@ -13,9 +13,16 @@ namespace filigree {
 
 		void process(std::vector<std::filesystem::path> images, std::filesystem::path outputDir);
 		void process(std::filesystem::path image, std::filesystem::path outputDir);
-	
-	private:
+
+		std::unique_ptr<sf::Image> addGrain(std::unique_ptr<sf::Image> img);
+		std::unique_ptr<sf::Image> resize(std::unique_ptr<sf::Image> img);
+		std::unique_ptr<sf::Image> watermark(std::unique_ptr<sf::Image> img);
+		
+	private:	
+		std::unique_ptr<sf::Image> assembleWatermark();
+		
 		filigree::EventQueue* evtQueue_ { nullptr };
+		float grainStrength { .01f };
 
 		// Settings
 	};
