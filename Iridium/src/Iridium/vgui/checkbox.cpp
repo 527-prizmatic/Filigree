@@ -2,6 +2,10 @@
 #include "rendering/vertex_renderer.hpp"
 
 namespace ir::vgui {
+	Checkbox::Checkbox() {
+		size_ = defaultSize_;
+	}
+
 	void Checkbox::onIdle() {
 		clrBackground_ = sf::Color::Transparent;
 	}

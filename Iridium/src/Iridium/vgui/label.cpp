@@ -7,7 +7,7 @@ namespace ir::vgui {
 		label_ = std::make_unique<ir::render::Text>();
 		if (label_) {
 			label_->setString(text);
-			label_->setScale(20.f);
+			label_->setScale(defaultScale_);
 		}
 		else {
 			LOG_ERROR("Error during creation of VGUI label \"" + text + "\"");

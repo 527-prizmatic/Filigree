@@ -188,8 +188,7 @@ namespace filigree::gui {
 			.setSize(ir::Vector { 479.f, 30.f });
 		
 		auto pathLabel { std::make_unique<ir::vgui::Label>(concisePath(activeDir_)) };
-		pathLabel->setScale(15.f)
-			.setPosition(ir::Vector { 6.f, 6.f });
+		pathLabel->setPosition(ir::Vector { 6.f, 6.f });
 		
 		/// TO BE IMPLEMENTED LATER
 		auto buttonPrev { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "arrow_left", sf::Color(128u, 128u, 128u)) };
@@ -221,8 +220,7 @@ namespace filigree::gui {
 				.setColors(sf::Color { 0u, 128u, 255u, 32u }, i % 2 ? sf::Color { 255u, 255u, 255u, 8u } : sf::Color::Transparent);
 
 			auto label { std::make_unique<ir::vgui::Label>() };
-			label->setScale(15.f)
-				.setPosition(ir::Vector { 6.f, 5.f });
+			label->setPosition(ir::Vector { 6.f, 5.f });
 
 			el->addChildElement("Label", std::move(label));
 

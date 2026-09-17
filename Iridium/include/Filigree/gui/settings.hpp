@@ -13,6 +13,17 @@ namespace filigree {
 	struct ProcessorSettings {
 		bool resize { false };
 		int resizeSize { 1000 };
+		bool applyFiligree { true };
+		std::string filigreePath { "filigree.png" };
+		std::string stampPath { "stamp.png" };
+
+		enum StampsToApply : unsigned char {
+			NONE = 0,
+			TOP_LEFT = 1 << 0,
+			TOP_RIGHT = 1 << 1,
+			BOTTOM_LEFT = 1 << 2,
+			BOTTOM_RIGHT = 1 << 3,
+		} applyStamps;
 	};
 
 	namespace gui {
@@ -31,12 +42,19 @@ namespace filigree {
 
 		private:
 			void createUIResize(float yPos);
+			void createUIWatermark(float yPos);
 
 			std::unique_ptr<ir::vgui::FramedElement> settings_;
 			filigree::EventQueue* evtQueue_ { nullptr };
 
 			ir::vgui::Checkbox* resizeEnabled_ { nullptr };
 			ir::vgui::IntField* resizeSize_ { nullptr };
+			
+			ir::vgui::Checkbox* filigreeEnabled_ { nullptr };
+			ir::vgui::Checkbox* stampTLEnabled_ { nullptr };
+			ir::vgui::Checkbox* stampTREnabled_ { nullptr };
+			ir::vgui::Checkbox* stampBLEnabled_ { nullptr };
+			ir::vgui::Checkbox* stampBREnabled_ { nullptr };
 		};
 	}
 }

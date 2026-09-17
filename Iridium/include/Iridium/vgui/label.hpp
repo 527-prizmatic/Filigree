@@ -43,9 +43,14 @@ namespace ir {
 			
 			virtual ir::vgui::Element& setPosition(ir::Vector pos) override;
 
+			inline static void setDefaultScale(float scale) { defaultScale_ = scale; }
+			[[nodiscard]] inline static float defaultScale() { return defaultScale_; }
+
 		protected:
 			std::unique_ptr<ir::render::Text> label_;
 			Anchor anchor_ { Anchor::NONE };
+
+			inline static float defaultScale_ { 10.f };
 		};
 	}
 }

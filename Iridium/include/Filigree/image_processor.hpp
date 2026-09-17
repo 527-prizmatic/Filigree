@@ -10,12 +10,6 @@
 namespace filigree {
 	class Processor {
 	public:
-		enum class Settings {
-			WATERMARK,	///< Apply image-wide watermark
-			STAMP,		///< Apply stamps in image corners
-			RESIZE,		///< Resize image to target resolution
-		};
-
 		Processor(filigree::EventQueue& evtQueue);
 
 		void loadSettings(ProcessorSettings settings);
@@ -29,15 +23,15 @@ namespace filigree {
 	private:	
 		std::unique_ptr<sf::Image> assembleWatermark();
 
-		std::unique_ptr<sf::Image> watermark_;
+		std::unique_ptr<sf::Image> filigree_;
 		std::unique_ptr<sf::Image> stamp_;
 
-		ProcessorSettings settings_;
-		
 		filigree::EventQueue* evtQueue_ { nullptr };
 		float grainStrength { .01f };
 
 		// Settings
+		ProcessorSettings settings_;
+		ir::Vector outputSize_ {};
 	};
 }
 

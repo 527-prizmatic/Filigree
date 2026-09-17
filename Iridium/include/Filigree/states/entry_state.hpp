@@ -2,6 +2,7 @@
 #define FILIGREE_STATE_ENTRY_HPP_
 
 #include <state.hpp>
+#include <vgui/label.hpp>
 
 #include "events.hpp"
 #include "gui/title_bar.hpp"
@@ -12,6 +13,11 @@
 class EntryState : public ir::StateBase<EntryState> {
 public:
 	void onInitialize() {
+		ir::vgui::Checkbox::setDefaultSize(ir::Vector { 24.f, 24.f });
+		ir::vgui::Label::setDefaultScale(15.f);
+
+
+
 		titleBar_ = std::make_unique<filigree::gui::TitleBar>(evtQueue_);
 		fileExplorer_ = std::make_unique<filigree::gui::FileExplorer>(evtQueue_);
 		settings_ = std::make_unique<filigree::gui::SettingsUI>(evtQueue_);
@@ -116,6 +122,7 @@ public:
 
 					case filigree::Event::START_FILE_PROCESSING: {
 						if (processor_) {
+							processor_->loadSettings(settings_->assembleSettings());
 							processor_->process(processingQueue_, std::filesystem::current_path());
 						}
 
