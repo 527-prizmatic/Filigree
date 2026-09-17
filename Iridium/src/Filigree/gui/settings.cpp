@@ -162,18 +162,12 @@ namespace filigree::gui {
 
 		settings.resize = resizeEnabled();
 		settings.resizeSize = resizeSize();
-		settings.applyFiligree = filigreeEnabled_->checked();
 
-		/// @todo oh no
-		settings.applyStamps = ProcessorSettings::StampsToApply::NONE;
-		if (stampTLEnabled_->checked())
-			settings.applyStamps = static_cast<ProcessorSettings::StampsToApply>(settings.applyStamps | ProcessorSettings::StampsToApply::TOP_LEFT);
-		if (stampTREnabled_->checked())
-			settings.applyStamps = static_cast<ProcessorSettings::StampsToApply>(settings.applyStamps | ProcessorSettings::StampsToApply::TOP_RIGHT);
-		if (stampBLEnabled_->checked())
-			settings.applyStamps = static_cast<ProcessorSettings::StampsToApply>(settings.applyStamps | ProcessorSettings::StampsToApply::BOTTOM_LEFT);
-		if (stampBREnabled_->checked())
-			settings.applyStamps = static_cast<ProcessorSettings::StampsToApply>(settings.applyStamps | ProcessorSettings::StampsToApply::BOTTOM_RIGHT);
+		settings.applyFiligree = filigreeEnabled_->checked();
+		settings.applyStampTL = stampTLEnabled_->checked();
+		settings.applyStampTR = stampTREnabled_->checked();
+		settings.applyStampBL = stampBLEnabled_->checked();
+		settings.applyStampBR = stampBREnabled_->checked();
 
 		return settings;
 	}

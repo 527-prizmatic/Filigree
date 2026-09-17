@@ -13,17 +13,15 @@ namespace filigree {
 	struct ProcessorSettings {
 		bool resize { false };
 		int resizeSize { 1000 };
-		bool applyFiligree { true };
+
 		std::string filigreePath { "filigree.png" };
 		std::string stampPath { "stamp.png" };
-
-		enum StampsToApply : unsigned char {
-			NONE = 0,
-			TOP_LEFT = 1 << 0,
-			TOP_RIGHT = 1 << 1,
-			BOTTOM_LEFT = 1 << 2,
-			BOTTOM_RIGHT = 1 << 3,
-		} applyStamps;
+		
+		bool applyFiligree { false };
+		bool applyStampTL { false };
+		bool applyStampTR { false };
+		bool applyStampBL { false };
+		bool applyStampBR { false };
 	};
 
 	namespace gui {

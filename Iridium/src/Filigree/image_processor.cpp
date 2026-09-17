@@ -36,9 +36,8 @@ namespace filigree {
 			img = resize(std::move(img));
 		}
 
-		if (settings_.applyFiligree || settings_.applyStamps != ProcessorSettings::StampsToApply::NONE) {
-			img = watermark(std::move(img));
-		}
+		/// Relevant settings checks done inside
+		img = watermark(std::move(img));
 
 	//	img = addGrain(std::move(img));
 
@@ -113,52 +112,50 @@ namespace filigree {
 			}
 		}
 
-		if (stamp_ && settings_.applyStamps != ProcessorSettings::StampsToApply::NONE) {
-			auto stampAt = [&](std::unique_ptr<sf::Image> img, int posX, int posY) -> std::unique_ptr<sf::Image> {
-				sf::Vector2i sizeStampI { stamp_->getSize() };
-				sf::Vector2i sizeImageI { img->getSize() };
-				for (int x = -10; x < sizeStampI.x + 10; x++) {
-					int xOff { x + posX };
-					for (int y = -10; y < sizeStampI.y + 10; y++) {
-						int yOff { y + posY };
+		auto stampAt = [&](std::unique_ptr<sf::Image> img, int posX, int posY) -> std::unique_ptr<sf::Image> {
+			sf::Vector2i sizeStampI { stamp_->getSize() };
+			sf::Vector2i sizeImageI { img->getSize() };
+			for (int x = -10; x < sizeStampI.x + 10; x++) {
+				int xOff { x + posX };
+				for (int y = -10; y < sizeStampI.y + 10; y++) {
+					int yOff { y + posY };
 
-						if (xOff >= 0 && yOff >= 0 && xOff < sizeImageI.x && yOff < sizeImageI.y) {
-							sf::Color clr;
+					if (xOff >= 0 && yOff >= 0 && xOff < sizeImageI.x && yOff < sizeImageI.y) {
+						sf::Color clr;
 
-							if (x >= 0 && y >= 0 && x < sizeStampI.x && y < sizeStampI.y) {
-								clr = stamp_->getPixel(sf::Vector2u { static_cast<unsigned int>(x), static_cast<unsigned int>(y) }).a > 128u ? sf::Color::Black : sf::Color::Transparent;
-							}
-							else {
-								clr = sf::Color::Transparent;
-							}
-
-							img->setPixel(sf::Vector2u { static_cast<unsigned int>(xOff), static_cast<unsigned int>(yOff) }, clr);
+						if (x >= 0 && y >= 0 && x < sizeStampI.x && y < sizeStampI.y) {
+							clr = stamp_->getPixel(sf::Vector2u { static_cast<unsigned int>(x), static_cast<unsigned int>(y) }).a > 128u ? sf::Color::Black : sf::Color::Transparent;
 						}
+						else {
+							clr = sf::Color::Transparent;
+						}
+
+						img->setPixel(sf::Vector2u { static_cast<unsigned int>(xOff), static_cast<unsigned int>(yOff) }, clr);
 					}
 				}
+			}
 
-				return img;
-			};
+			return img;
+		};
 
-			if (outputSize_.x > stamp_->getSize().x && outputSize_.y > stamp_->getSize().y) {
-				if (settings_.applyStamps & ProcessorSettings::StampsToApply::BOTTOM_RIGHT) {
-					wm = stampAt(std::move(wm), outputSize_.x - stamp_->getSize().x, outputSize_.y - stamp_->getSize().y);
-				}
+		if (outputSize_.x > stamp_->getSize().x && outputSize_.y > stamp_->getSize().y) {
+			if (settings_.applyStampBR) {
+				wm = stampAt(std::move(wm), outputSize_.x - stamp_->getSize().x, outputSize_.y - stamp_->getSize().y);
+			}
 
-				bool xDouble { outputSize_.x > stamp_->getSize().x * 2 };
-				bool yDouble { outputSize_.y > stamp_->getSize().y * 2 };
+			bool xDouble { outputSize_.x > stamp_->getSize().x * 2 };
+			bool yDouble { outputSize_.y > stamp_->getSize().y * 2 };
 
-				if (yDouble && settings_.applyStamps & ProcessorSettings::StampsToApply::TOP_RIGHT) {
-					wm = stampAt(std::move(wm), outputSize_.x - stamp_->getSize().x, 0);
-				}
+			if (yDouble && settings_.applyStampTR) {
+				wm = stampAt(std::move(wm), outputSize_.x - stamp_->getSize().x, 0);
+			}
 
-				if (xDouble && settings_.applyStamps & ProcessorSettings::StampsToApply::BOTTOM_LEFT) {
-					wm = stampAt(std::move(wm), 0, outputSize_.y - stamp_->getSize().y);
-				}
+			if (xDouble && settings_.applyStampBL) {
+				wm = stampAt(std::move(wm), 0, outputSize_.y - stamp_->getSize().y);
+			}
 
-				if (xDouble && yDouble && settings_.applyStamps & ProcessorSettings::StampsToApply::TOP_LEFT) {
-					wm = stampAt(std::move(wm), 0, 0);
-				}
+			if (xDouble && yDouble && settings_.applyStampTL) {
+				wm = stampAt(std::move(wm), 0, 0);
 			}
 		}
 
