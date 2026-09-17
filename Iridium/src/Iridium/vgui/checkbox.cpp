@@ -11,7 +11,7 @@ namespace ir::vgui {
 	}
 
 	void Checkbox::onClick() {
-		enabled_ = !enabled_;
+		checked_ = !checked_;
 	}
 
 	void Checkbox::onDeselect() {
@@ -20,7 +20,7 @@ namespace ir::vgui {
 
 	void Checkbox::render(ir::render::VertexRenderer& renderer) const {
 		renderFrame(renderer);
-		if (enabled_) {
+		if (checked_) {
 			renderCheckbox(renderer);
 		}
 		renderChildren(renderer);
@@ -43,5 +43,10 @@ namespace ir::vgui {
 		renderer.addPoint(absPos + ir::Vector { 0.f, size_.y * .5f }, clrFrame_);
 
 		renderer.flush();
+	}
+
+	ir::vgui::Checkbox& Checkbox::setChecked(bool checked) {
+		checked_= checked;
+		return *this;
 	}
 }

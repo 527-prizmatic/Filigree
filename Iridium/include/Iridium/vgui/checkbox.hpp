@@ -13,13 +13,13 @@ namespace ir::vgui {
 		virtual void onClick() override;
 		virtual void onDeselect() override;
 
-		void setEnabled(bool enabled) { enabled_= enabled; }
-		[[nodiscard]] bool isEnabled() const { return enabled_; } ///< @return Whether the checkbox is ticked
+		ir::vgui::Checkbox& setChecked(bool checked);
+		[[nodiscard]] bool checked() const { return checked_; } ///< @return Whether the checkbox is ticked
 
 	private:
 		void renderCheckbox(ir::render::VertexRenderer& renderer) const;
 
-		bool enabled_;
+		bool checked_;
 	};
 }
 

@@ -79,6 +79,9 @@ namespace ir {
 			ir::vgui::Element& registerReleaseEvent(ir::vgui::ClickEvent event);
 			void processEvent(const sf::Event& evt); ///< @brief Recursively processes SFML events for the element, as well as its children.
 
+			ir::vgui::Element& setEnabled(bool enabled);
+			[[nodiscard]] bool enabled() const;
+
 		protected:
 			void renderFrame(ir::render::VertexRenderer& renderer) const; ///< @brief Always renders element frame and background
 			void renderDebugFrame(ir::render::VertexRenderer& renderer) const; ///< @brief Only renders element frame and background is debugMode_ is set to true
@@ -122,6 +125,7 @@ namespace ir {
 			std::vector<ir::vgui::ClickEvent> releaseEvents {};
 
 			bool clickHeld_ { false }; ///< @brief Whether left-click is held (for event detection purposes)
+			bool enabled_ { true };
 
 			inline static bool debugMode { false }; ///< @brief Whether debug mode is enabled for all VGUI elements (forces frame rendering)
 		};

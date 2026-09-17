@@ -6,6 +6,7 @@
 #include "events.hpp"
 #include "gui/title_bar.hpp"
 #include "gui/file_explorer.hpp"
+#include "gui/settings.hpp"
 #include "image_processor.hpp"
 
 class EntryState : public ir::StateBase<EntryState> {
@@ -13,12 +14,17 @@ public:
 	void onInitialize() {
 		titleBar_ = std::make_unique<filigree::gui::TitleBar>(evtQueue_);
 		fileExplorer_ = std::make_unique<filigree::gui::FileExplorer>(evtQueue_);
+		settings_ = std::make_unique<filigree::gui::SettingsUI>(evtQueue_);
 		processor_ = std::make_unique<filigree::Processor>(evtQueue_);
 	}
 
 	void onReceiveEvent(const sf::Event& event) {
 		if (fileExplorer_) {
 			fileExplorer_->processEvent(event);
+		}
+		
+		if (settings_) {
+			settings_->processEvent(event);
 		}
 	}
 
@@ -29,6 +35,10 @@ public:
 
 		if (fileExplorer_) {
 			fileExplorer_->update(*context_->mouse);
+		}
+
+		if (settings_) {
+			settings_->update(*context_->mouse);
 		}
 
 		processEvents();
@@ -45,6 +55,10 @@ public:
 		
 		if (fileExplorer_) {
 			fileExplorer_->render(*context_->vertexRenderer);
+		}
+		
+		if (settings_) {
+			settings_->render(*context_->vertexRenderer);
 		}
 	}
 
@@ -128,6 +142,7 @@ private:
 
 	std::unique_ptr<filigree::gui::TitleBar> titleBar_;
 	std::unique_ptr<filigree::gui::FileExplorer> fileExplorer_;
+	std::unique_ptr<filigree::gui::SettingsUI> settings_;
 
 	std::unique_ptr<filigree::Processor> processor_;
 

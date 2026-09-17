@@ -4,6 +4,10 @@ namespace filigree {
 	Processor::Processor(filigree::EventQueue& evtQueue) {
 		evtQueue_ = &evtQueue;
 	}
+
+	void Processor::loadSettings(ProcessorSettings settings) {
+		settings_ = settings;
+	}
 	
 	void Processor::process(std::vector<std::filesystem::path> images, std::filesystem::path outputDir) {
 		for (auto& img : images) {
@@ -24,9 +28,13 @@ namespace filigree {
 		}
 		*/
 
-		auto grainy { addGrain(std::move(img)) };
+		if (settings_.resize) {
+			img = resize(std::move(img));
+		}
 
-		if (grainy->saveToFile(outputDir / image.filename())) {
+		img = addGrain(std::move(img));
+
+		if (img->saveToFile(outputDir / image.filename())) {
 			LOG_INFO(std::string { "File " } + image.filename().string() + " processed successfully");
 		}
 		else {
@@ -53,18 +61,18 @@ namespace filigree {
 	}
 
 	std::unique_ptr<sf::Image> Processor::resize(std::unique_ptr<sf::Image> img) {
-		auto ret = std::make_unique<sf::Image>(img->getSize());
+	//	auto ret = std::make_unique<sf::Image>(img->getSize());
 
 
 		
-		return ret;
+		return img;
 	}
 
 	std::unique_ptr<sf::Image> Processor::watermark(std::unique_ptr<sf::Image> img) {
-		auto ret = std::make_unique<sf::Image>(img->getSize());
+	//	auto ret = std::make_unique<sf::Image>(img->getSize());
 
 
 		
-		return ret;
+		return img;
 	}
 }

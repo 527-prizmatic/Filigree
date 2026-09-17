@@ -38,6 +38,8 @@ namespace ir::vgui {
 			label_->setPosition(absolutePosition() + size_ * .5f - label_->boundingBoxSize() * .5f);
 			label_->render(renderer);
 		}
+
+		ir::vgui::Element::render(renderer);
 	}
 	
 	template <>
@@ -49,6 +51,8 @@ namespace ir::vgui {
 			label_->setPosition(absolutePosition() + size_ * .5f - label_->boundingBoxSize() * .5f);
 			label_->render(renderer);
 		}
+		
+		ir::vgui::Element::render(renderer);
 	}
 #pragma endregion
 
@@ -96,6 +100,7 @@ namespace ir::vgui {
 				if (in == 8) { // Backspace
 					if (val.length() > 0) {
 						val.erase(val.end() - 1);
+						std::from_chars(val.data(), val.data() + val.size(), value_);
 					}
 				}
 				else if (val.length() < maxChars_) {

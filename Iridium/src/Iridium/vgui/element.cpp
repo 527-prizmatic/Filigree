@@ -24,6 +24,10 @@ namespace ir::vgui {
 	}
 
 	bool Element::update(ir::input::Mouse& mouse) {
+		if (!enabled_) {
+			return false;
+		}
+
 		ir::Vector posAbsolute = absolutePosition();
 		bool isInArea = mouse.cursorPosition().isInArea(posAbsolute, posAbsolute + size_);
 
@@ -169,6 +173,15 @@ namespace ir::vgui {
 
 	void Element::setDebugMode(bool debug) {
 		debugMode = debug;
+	}
+
+	ir::vgui::Element& Element::setEnabled(bool enabled) {
+		enabled_ = enabled;
+		return *this;
+	}
+
+	bool Element::enabled() const {
+		return enabled_;
 	}
 #pragma endregion
 
