@@ -32,8 +32,17 @@ namespace filigree::gui {
 	}
 
 	void SettingsUI::update(ir::input::Mouse& mouseInput) {
-		resizeSize_->setLabelColor(resizeEnabled_->checked() ? sf::Color::White : sf::Color { 128u, 128u, 128u })
-			.setEnabled(resizeEnabled_->checked());
+		if (resizeSize_) {
+			resizeSize_->setLabelColor(resizeEnabled_->checked() ? sf::Color::White : sf::Color { 128u, 128u, 128u })
+				.setEnabled(resizeEnabled_->checked());
+		}
+		
+		if (watermarkOpacity_) {
+			auto labelO { settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Label>("LabelO") };
+			if (labelO) {
+				labelO->setLabel("Opacity: " + std::to_string(watermarkOpacity_->value()));
+			}
+		}
 
 		if (settings_) {
 			settings_->update(mouseInput);
@@ -82,7 +91,7 @@ namespace filigree::gui {
 
 	void SettingsUI::createUIWatermark(float yPos) {
 		auto field { std::make_unique<ir::vgui::FramedElement>() };
-		field->setSize(ir::Vector { 399.f, 120.f })
+		field->setSize(ir::Vector { 399.f, 150.f })
 			.setPosition(ir::Vector { 0.f, yPos })
 			.setColors(sf::Color::White, sf::Color::Transparent);
 
@@ -98,7 +107,6 @@ namespace filigree::gui {
 
 			auto labelS { std::make_unique<ir::vgui::Label>("Apply stamps:") };
 			labelS->setPosition(ir::Vector { 5.f, 34.f });
-			
 			field->addChildElement("LabelS", std::move(labelS));
 
 			auto checkTL { std::make_unique<ir::vgui::Checkbox>() };
@@ -138,6 +146,17 @@ namespace filigree::gui {
 				checkBR->addChildElement("Label", std::move(labelBR));
 			field->addChildElement("CheckBR", std::move(checkBR));
 
+			auto labelO { std::make_unique<ir::vgui::Label>("Opacity:") };
+			labelO->setPosition(ir::Vector { 5.f, 124.f });
+			field->addChildElement("LabelO", std::move(labelO));
+
+			auto sliderOpacity { std::make_unique<ir::vgui::Slider>(0, 100) };
+			sliderOpacity->setValue(20)
+				.setPosition(ir::Vector { 133.f, 123.f })
+				.setSize(ir::Vector { 254.f, 24.f });
+
+			field->addChildElement("SliderOpacity", std::move(sliderOpacity));
+
 		settings_->addChildElement("FieldWatermark", std::move(field));
 
 		filigreeEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckF");
@@ -145,6 +164,7 @@ namespace filigree::gui {
 		stampTREnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckTR");
 		stampBLEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckBL");
 		stampBREnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckBR");
+		watermarkOpacity_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Slider>("SliderOpacity");
 	}
 
 
@@ -168,6 +188,11 @@ namespace filigree::gui {
 		settings.applyStampTR = stampTREnabled_->checked();
 		settings.applyStampBL = stampBLEnabled_->checked();
 		settings.applyStampBR = stampBREnabled_->checked();
+		settings.watermarkOpacity = watermarkOpacity_->value() * .01f;
+
+		settings.pathOutput = pathOutput;
+		settings.pathFiligree = pathFiligree;
+		settings.pathStamp = pathStamp;
 
 		return settings;
 	}

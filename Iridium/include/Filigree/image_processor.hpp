@@ -13,8 +13,8 @@ namespace filigree {
 		Processor(filigree::EventQueue& evtQueue);
 
 		void loadSettings(ProcessorSettings settings);
-		void process(std::vector<std::filesystem::path> images, std::filesystem::path outputDir);
-		void process(std::filesystem::path image, std::filesystem::path outputDir);
+		void process(std::vector<std::filesystem::path> images);
+		void process(std::filesystem::path image);
 
 		std::unique_ptr<sf::Image> addGrain(std::unique_ptr<sf::Image> img);
 		std::unique_ptr<sf::Image> resize(std::unique_ptr<sf::Image> img);

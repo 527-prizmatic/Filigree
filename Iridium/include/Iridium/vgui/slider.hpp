@@ -12,13 +12,13 @@ namespace ir::vgui {
 		virtual bool update(ir::input::Mouse& mouse) override;
 		virtual void render(ir::render::VertexRenderer& renderer) const override;
 
-		void setValue(int val);
+		Slider& setValue(int val);
 		[[nodiscard]] int value() const;
 
-		void setUpperBound(int upper);
+		Slider& setUpperBound(int upper);
 		[[nodiscard]] int upperBound() const;
 
-		void setLowerBound(int lower);
+		Slider& setLowerBound(int lower);
 		[[nodiscard]] int lowerBound() const;
 
 	private:

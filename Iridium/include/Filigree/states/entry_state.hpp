@@ -123,7 +123,7 @@ public:
 					case filigree::Event::START_FILE_PROCESSING: {
 						if (processor_) {
 							processor_->loadSettings(settings_->assembleSettings());
-							processor_->process(processingQueue_, std::filesystem::current_path());
+							processor_->process(processingQueue_);
 						}
 
 						break;

@@ -67,23 +67,26 @@ namespace ir::vgui {
 		renderChildren(renderer);
 	}
 
-	void Slider::setValue(int val) {
+	Slider& Slider::setValue(int val) {
 		value_ = val;
 		clampValue();
+		return *this;
 	}
 
 	int Slider::value() const { return value_; }
 
-	void Slider::setUpperBound(int upper){
+	Slider& Slider::setUpperBound(int upper){
 		bounds_.upper_ = upper;
 		clampValue();
+		return *this;
 	}
 
 	int Slider::upperBound() const { return bounds_.upper_; }
 
-	void Slider::setLowerBound(int lower) {
+	Slider& Slider::setLowerBound(int lower) {
 		bounds_.lower_ = lower;
 		clampValue();
+		return *this;
 	}
 
 	int Slider::lowerBound() const { return bounds_.lower_; }

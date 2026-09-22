@@ -8,17 +8,17 @@ namespace filigree {
 	void Processor::loadSettings(ProcessorSettings settings) {
 		settings_ = settings;
 
-		filigree_ = std::make_unique<sf::Image>(settings.filigreePath);
-		stamp_ = std::make_unique<sf::Image>(settings.stampPath);
+		filigree_ = std::make_unique<sf::Image>(settings.pathFiligree);
+		stamp_ = std::make_unique<sf::Image>(settings.pathStamp);
 	}
 	
-	void Processor::process(std::vector<std::filesystem::path> images, std::filesystem::path outputDir) {
+	void Processor::process(std::vector<std::filesystem::path> images) {
 		for (auto& img : images) {
-			process(img, outputDir);
+			process(img);
 		}
 	}
 
-	void Processor::process(std::filesystem::path image, std::filesystem::path outputDir) {
+	void Processor::process(std::filesystem::path image) {
 		auto img = std::make_unique<sf::Image>(image);
 		outputSize_ = ir::Vector::fromSFMLVector(img->getSize());
 
@@ -41,7 +41,7 @@ namespace filigree {
 
 	//	img = addGrain(std::move(img));
 
-		if (img->saveToFile(outputDir / image.filename())) {
+		if (img->saveToFile(settings_.pathOutput / image.filename())) {
 			LOG_INFO(std::string { "File " } + image.filename().string() + " processed successfully");
 		}
 		else {
@@ -72,7 +72,7 @@ namespace filigree {
 		sf::Vector2u newSize {};
 
 		if (originalSize.x < originalSize.y) {
-			outputSize_.y = settings_.resizeSize;
+			newSize.y = settings_.resizeSize;
 			float ratio { static_cast<float>(newSize.y) / static_cast<float>(originalSize.y) };
 			newSize.x = originalSize.x * ratio;
 		}
@@ -113,17 +113,57 @@ namespace filigree {
 	}
 
 	std::unique_ptr<sf::Image> Processor::watermark(std::unique_ptr<sf::Image> img) {
+		ir::Vector imageCenter { outputSize_.x * .5f, outputSize_.y * .5f };
+
+		auto colorBlend { [&](sf::Color clrI, sf::Color clrF, float opacity, unsigned int x, unsigned int y) -> sf::Color {
+			if (clrF.a > 128) {
+				ir::HSLColor clrFHSL { static_cast<std::uint8_t>(sqrt(ir::math::pow2(x - imageCenter.x) + ir::math::pow2(y - imageCenter.y)) * .25f), 40u, 128u }; ///< HSL watermark, hue-adjusted for distance from image center
+				sf::Color clrFinal { clrFHSL.toRGB().toSfColor() }; ///< RGB equivalent
+				
+				sf::Color clrO { sf::Color::Transparent }; ///< Output color
+
+				/// Force image color to hue-adjusted watermark color in fully transparent areas
+				if (clrI.a == 0u) {
+					clrI = { clrFinal.r, clrFinal.g, clrFinal.b, 0u };
+				}
+
+				/// Interpolate between image and hue-adjusted watermark
+				clrO.r = ir::math::interpolate(clrI.r, clrFinal.r, opacity);
+				clrO.g = ir::math::interpolate(clrI.g, clrFinal.g, opacity);
+				clrO.b = ir::math::interpolate(clrI.b, clrFinal.b, opacity);
+
+				if (clrI.a == 255u) { /// Fully opaque areas stay opaque
+					clrO.a = 255u;
+				}
+				else { /// Others either keep their original opacity or take the watermark's, whichever is higher
+					clrO.a = std::max(ir::math::interpolate(clrI.a, static_cast<std::uint8_t>(255u), opacity), static_cast<std::uint8_t>(clrF.a * opacity));
+				}
+				
+				/// Slightly darken watermarked areas of high lightness, so the watermark pops more
+				ir::HSLColor clrIHSL { ir::RGBColor { clrI.r, clrI.g, clrI.b, clrI.a }.toHSL() };
+				ir::HSLColor clrOHSL { ir::RGBColor { clrO.r, clrO.g, clrO.b, clrO.a }.toHSL() };
+				if (int d { clrIHSL.l - clrOHSL.l }; d < 16 && d >= 0) {
+					clrOHSL.l -= std::min((16 - d), static_cast<int>(opacity * 100));
+					clrO = clrOHSL.toRGB().toSfColor();
+				}
+
+				return clrO;
+			}
+			else {
+				return clrI;
+			}
+		} };
+
 		auto wm { assembleWatermark() };
 
 		for (unsigned int x = 0; x < outputSize_.x; x++) {
 			for (unsigned int y = 0; y < outputSize_.y; y++) {
 				sf::Vector2u pos { x, y };
 				if (wm->getPixel(pos).a > 128u) {
-					sf::Color clr { img->getPixel(pos) };
-					/// @todo Modify this function for more efficient and better-looking watermarking (look at how the previous iteration did it)
-					clr.r = static_cast<std::uint8_t>(ir::math::clamp(static_cast<std::uint16_t>(clr.r) + 16u, 0u, 255u));
-					clr.a = static_cast<std::uint8_t>(ir::math::clamp(static_cast<std::uint16_t>(clr.a) + 16u, 0u, 255u));
-					img->setPixel(pos, clr);
+					sf::Color clrImg { img->getPixel(pos) };
+					sf::Color clrWatermark { wm->getPixel(pos) };
+					
+					img->setPixel(pos, colorBlend(clrImg, clrWatermark, settings_.watermarkOpacity, x, y));
 				}
 			}
 		}

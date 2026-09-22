@@ -8,20 +8,24 @@
 #include <vgui/element.hpp>
 #include <vgui/checkbox.hpp>
 #include <vgui/input_field.hpp>
+#include <vgui/slider.hpp>
 
 namespace filigree {
 	struct ProcessorSettings {
 		bool resize { false };
 		int resizeSize { 1000 };
 
-		std::string filigreePath { "filigree.png" };
-		std::string stampPath { "stamp.png" };
+		std::filesystem::path pathOutput {};
+		std::filesystem::path pathFiligree {};
+		std::filesystem::path pathStamp {};
 		
 		bool applyFiligree { false };
 		bool applyStampTL { false };
 		bool applyStampTR { false };
 		bool applyStampBL { false };
 		bool applyStampBR { false };
+
+		float watermarkOpacity { .2f };
 	};
 
 	namespace gui {
@@ -53,6 +57,11 @@ namespace filigree {
 			ir::vgui::Checkbox* stampTREnabled_ { nullptr };
 			ir::vgui::Checkbox* stampBLEnabled_ { nullptr };
 			ir::vgui::Checkbox* stampBREnabled_ { nullptr };
+			ir::vgui::Slider* watermarkOpacity_ { nullptr };
+
+			std::filesystem::path pathOutput { std::filesystem::current_path() };
+			std::filesystem::path pathFiligree { "..\\resources\\default_filigree.png" };
+			std::filesystem::path pathStamp { "..\\resources\\default_stamp.png" };
 		};
 	}
 }
