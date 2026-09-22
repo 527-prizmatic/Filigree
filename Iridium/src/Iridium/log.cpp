@@ -1,6 +1,7 @@
 #include "log.hpp"
 #include <iostream>
 #include <list>
+#include <mutex>
 #include <thread>
 
 namespace ir::log {

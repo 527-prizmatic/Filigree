@@ -10,6 +10,11 @@
 #include "gui/settings.hpp"
 #include "image_processor.hpp"
 
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsfinae-incomplete"
+#endif
+
 class EntryState : public ir::StateBase<EntryState> {
 public:
 	void onInitialize() {
@@ -156,5 +161,9 @@ private:
 	std::vector<std::filesystem::path> processingQueue_;
 
 };
+
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 #endif // FILIGREE_STATE_ENTRY_HPP_
