@@ -68,11 +68,48 @@ namespace filigree {
 	}
 
 	std::unique_ptr<sf::Image> Processor::resize(std::unique_ptr<sf::Image> img) {
-	//	auto ret = std::make_unique<sf::Image>(img->getSize());
+		auto originalSize { img->getSize() };
+		sf::Vector2u newSize {};
 
+		if (originalSize.x < originalSize.y) {
+			outputSize_.y = settings_.resizeSize;
+			float ratio { static_cast<float>(newSize.y) / static_cast<float>(originalSize.y) };
+			newSize.x = originalSize.x * ratio;
+		}
+		else if (originalSize.x > originalSize.y) {
+			newSize.x = settings_.resizeSize;
+			float ratio { static_cast<float>(newSize.x) / static_cast<float>(originalSize.x) };
+			newSize.y = originalSize.y * ratio;
+		}
+		else { // if (originalSize.y == originalSize.x)
+			newSize = { static_cast<unsigned int>(settings_.resizeSize), static_cast<unsigned int>(settings_.resizeSize) };
+		}
 
+		auto ret = std::make_unique<sf::Image>(newSize);
+
+		auto randomRounding { [](float val) -> unsigned int {
+			unsigned int rounded { static_cast<unsigned int>(val) };
+			unsigned int threshold { static_cast<unsigned int>((val - static_cast<float>(rounded)) * 1000.f) };
+			return rounded + ((rand() % 200u + 400u) < threshold ? 1 : 0);
+		}};
+
+		for (unsigned int x = 0; x < newSize.x; x++) {
+			float xRatio { static_cast<float>(x) / static_cast<float>(newSize.x) };
+			for (unsigned int y = 0; y < newSize.y; y++) {
+				float yRatio { static_cast<float>(y) / static_cast<float>(newSize.y) };
+
+				sf::Vector2u mappedOriginalPos {
+					ir::math::clamp(randomRounding(originalSize.x * xRatio), 0u, originalSize.x - 1),
+					ir::math::clamp(randomRounding(originalSize.y * yRatio), 0u, originalSize.y - 1)
+				};
+
+				ret->setPixel(sf::Vector2u { x, y }, img->getPixel(mappedOriginalPos));
+			}
+		}
+
+		outputSize_ = ir::Vector::fromSFMLVector(newSize);
 		
-		return img;
+		return ret;
 	}
 
 	std::unique_ptr<sf::Image> Processor::watermark(std::unique_ptr<sf::Image> img) {

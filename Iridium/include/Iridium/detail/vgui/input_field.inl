@@ -98,8 +98,12 @@ namespace ir::vgui {
 				
 				std::string val { std::to_string(value_) };
 				if (in == 8) { // Backspace
-					if (val.length() > 0) {
+					if (val.length() > 1) {
 						val.erase(val.end() - 1);
+						std::from_chars(val.data(), val.data() + val.size(), value_);
+					}
+					else {
+						val = "0";
 						std::from_chars(val.data(), val.data() + val.size(), value_);
 					}
 				}
