@@ -11,8 +11,6 @@ namespace ir::vgui {
 	InputField<T>::InputField(T defaultValue) {
 		value_ = defaultValue;
 		
-		ir::render::Text::loadModels();
-
 		label_ = std::make_unique<ir::render::Text>();
 		if (label_) {
 			label_->setScale(10.f);
