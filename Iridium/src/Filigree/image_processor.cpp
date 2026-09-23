@@ -22,26 +22,16 @@ namespace filigree {
 		auto img = std::make_unique<sf::Image>(image);
 		outputSize_ = ir::Vector::fromSFMLVector(img->getSize());
 
-		/*
-		for (unsigned int x = 0; x < img.getSize().x; x++) {
-			for (unsigned int y = 0; y < img.getSize().y; y++) {
-				sf::Color clr { img.getPixel(sf::Vector2u { x, y }) };
-				clr.r = rand() % 64u;
-				img.setPixel(sf::Vector2u { x, y }, clr);
-			}
-		}
-		*/
-
 		if (settings_.resize) {
 			img = resize(std::move(img));
 		}
 
-		/// Relevant settings checks done inside
-		img = watermark(std::move(img));
-
 		if (settings_.applyNoise) {
 			img = addPixelNoise(std::move(img));
 		}
+		/// Relevant settings checks done inside
+		img = watermark(std::move(img));
+
 		
 		if (img->saveToFile(settings_.pathOutput / image.filename())) {
 			LOG_INFO(std::string { "File " } + image.filename().string() + " processed successfully");
@@ -57,11 +47,19 @@ namespace filigree {
 		for (unsigned int x = 0; x < img->getSize().x; x++) {
 			for (unsigned int y = 0; y < img->getSize().y; y++) {
 				sf::Color clr { img->getPixel(sf::Vector2u { x, y }) };
+				ir::HSLColor clrHSL { ir::RGBColor { clr.r, clr.g, clr.b }.toHSL() };
 
-				int interval { static_cast<int>(settings_.noiseOpacity * 255) };
-				clr.r = static_cast<unsigned int>(ir::math::clamp(rand() % (interval * 2) - interval + static_cast<int>(clr.r), 0, 255));
-				clr.g = static_cast<unsigned int>(ir::math::clamp(rand() % (interval * 2) - interval + static_cast<int>(clr.g), 0, 255));
-				clr.b = static_cast<unsigned int>(ir::math::clamp(rand() % (interval * 2) - interval + static_cast<int>(clr.b), 0, 255));
+				ir::HSLColor clrNoise {
+					static_cast<std::uint8_t>(ir::math::clamp(rand() % 20 - 10 + clrHSL.h, 0, 255)), ///< Slight deviation from original hue
+					clrHSL.s, ///< Preserve original hue
+					static_cast<std::uint8_t>(rand() % 255) ///< Random lightness
+				};
+				ir::RGBColor clrNoiseRGB { clrNoise.toRGB() };
+
+				float factor = settings_.noiseOpacity * .1f * static_cast<float>(rand() % 10); ///< For quadratic distribution (stronger specks are rarer)
+				clr.r = ir::math::interpolate(clr.r, clrNoiseRGB.r, factor);
+				clr.g = ir::math::interpolate(clr.g, clrNoiseRGB.g, factor);
+				clr.b = ir::math::interpolate(clr.b, clrNoiseRGB.b, factor);
 
 				ret->setPixel(sf::Vector2u { x, y }, clr);
 			}
