@@ -21,7 +21,9 @@ namespace filigree {
 	class EventQueue {
 	public:
 		void add(filigree::Event evt) {
-			queue.push(evt);
+			if (isOpen_) {	
+				queue.push(evt);
+			}
 		}
 
 		[[nodiscard]] std::optional<filigree::Event> pop() {
@@ -34,10 +36,14 @@ namespace filigree {
 			return evt;
 		}
 
-		[[nodiscard]] bool isEmpty() { return queue.size() == 0; }
+		[[nodiscard]] bool empty() { return queue.size() == 0; }
+
+		void setOpen(bool isOpen) { isOpen_ = isOpen; }
+		[[nodiscard]] bool isOpen() { return isOpen_; }
 
 	private:
 		std::queue<filigree::Event> queue;
+		bool isOpen_ { true };
 	};
 }
 

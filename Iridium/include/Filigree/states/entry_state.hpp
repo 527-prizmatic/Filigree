@@ -1,6 +1,8 @@
 #ifndef FILIGREE_STATE_ENTRY_HPP_
 #define FILIGREE_STATE_ENTRY_HPP_
 
+#include <thread>
+
 #include <state.hpp>
 #include <vgui/label.hpp>
 
@@ -15,8 +17,6 @@ public:
 	void onInitialize() {
 		ir::vgui::Checkbox::setDefaultSize(ir::Vector { 24.f, 24.f });
 		ir::vgui::Label::setDefaultScale(15.f);
-
-
 
 		titleBar_ = std::make_unique<filigree::gui::TitleBar>(evtQueue_);
 		fileExplorer_ = std::make_unique<filigree::gui::FileExplorer>(evtQueue_);
@@ -48,10 +48,6 @@ public:
 		}
 
 		processEvents();
-
-		if (context_->mouse->isPressed(sf::Mouse::Button::Right)) {
-			evtQueue_.add(filigree::Event::START_FILE_PROCESSING);
-		}
 	}
 
 	void onRender() {
@@ -73,7 +69,7 @@ public:
 	}
 
 	void processEvents() {
-		while (!evtQueue_.isEmpty()) {
+		while (!evtQueue_.empty()) {
 			auto evt { evtQueue_.pop() };
 			if (evt.has_value()) {
 				switch (evt.value()) {
@@ -84,7 +80,6 @@ public:
 
 					case filigree::Event::SELECT_FILE: {
 						fileExplorer_->processFileSelection();
-
 						break;
 					}
 
@@ -113,17 +108,39 @@ public:
 							}
 						}
 
+						std::sort(processingQueue_.begin(), processingQueue_.end(),
+							[](const std::filesystem::path& a, const std::filesystem::path& b) { return a.filename().string() < b.filename().string(); }
+						);
+
 						for (auto& path : processingQueue_) {
-							LOG_INFO(path.string());
+							LOG_INFO(path.parent_path().filename().string() + " / " + path.filename().string());
 						}
 
 						break;
 					}
 
 					case filigree::Event::START_FILE_PROCESSING: {
+						if (!evtQueue_.isOpen()) {
+							LOG_WARN("Cannot start processing while another processing task is running");
+							break;
+						}
+
 						if (processor_) {
-							processor_->loadSettings(settings_->assembleSettings());
-							processor_->process(processingQueue_);
+							auto sentQueue { processingQueue_ };
+							std::jthread thr([&, sentQueue]() {
+								evtQueue_.setOpen(false);
+								try {
+									processor_->loadSettings(settings_->assembleSettings());
+									processor_->process(sentQueue);
+								}
+								catch (...) {
+									LOG_ERROR("Unspecified error during image processing");
+								}
+								evtQueue_.setOpen(true);
+							});
+
+							thr.detach();
+							processingQueue_.clear(); ///< Preparing for the next round
 						}
 
 						break;
@@ -131,7 +148,6 @@ public:
 
 					case filigree::Event::MINIMIZE: {
 						context_->appWindow->minimize();
-
 						break;
 					}
 

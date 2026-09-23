@@ -45,6 +45,7 @@ namespace filigree {
 		private:
 			void createUIResize(float yPos);
 			void createUIWatermark(float yPos);
+			void createUIStartButton(float yPos);
 
 			std::unique_ptr<ir::vgui::FramedElement> settings_;
 			filigree::EventQueue* evtQueue_ { nullptr };
@@ -58,6 +59,8 @@ namespace filigree {
 			ir::vgui::Checkbox* stampBLEnabled_ { nullptr };
 			ir::vgui::Checkbox* stampBREnabled_ { nullptr };
 			ir::vgui::Slider* watermarkOpacity_ { nullptr };
+
+			ir::vgui::FramedElement* startProcessingButton_ { nullptr };
 
 			std::filesystem::path pathOutput { std::filesystem::current_path() };
 			std::filesystem::path pathFiligree { "..\\resources\\default_filigree.png" };

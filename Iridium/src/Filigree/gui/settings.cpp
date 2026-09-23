@@ -22,6 +22,8 @@ namespace filigree::gui {
 				
 			createUIResize(30.f);
 			createUIWatermark(90.f);
+
+			createUIStartButton(630.f);
 		}
 	}
 
@@ -32,6 +34,13 @@ namespace filigree::gui {
 	}
 
 	void SettingsUI::update(ir::input::Mouse& mouseInput) {
+		if (evtQueue_->isOpen()) {
+			startProcessingButton_->setColors(sf::Color::White, sf::Color { 32u, 64u, 0u });
+		}
+		else {
+			startProcessingButton_->setColors(sf::Color::White, sf::Color { 48u, 48u, 48u });
+		}
+
 		if (resizeSize_) {
 			resizeSize_->setLabelColor(resizeEnabled_->checked() ? sf::Color::White : sf::Color { 128u, 128u, 128u })
 				.setEnabled(resizeEnabled_->checked());
@@ -153,7 +162,8 @@ namespace filigree::gui {
 			auto sliderOpacity { std::make_unique<ir::vgui::Slider>(0, 100) };
 			sliderOpacity->setValue(20)
 				.setPosition(ir::Vector { 133.f, 123.f })
-				.setSize(ir::Vector { 254.f, 24.f });
+				.setSize(ir::Vector { 254.f, 24.f })
+				.setColors(sf::Color::White, sf::Color { 96u, 192u, 0u });
 
 			field->addChildElement("SliderOpacity", std::move(sliderOpacity));
 
@@ -167,6 +177,23 @@ namespace filigree::gui {
 		watermarkOpacity_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Slider>("SliderOpacity");
 	}
 
+	void SettingsUI::createUIStartButton(float yPos) {
+		auto button { std::make_unique<ir::vgui::FramedElement>() };
+		button->setSize(ir::Vector { 393.f, 54.f })
+			.setPosition(ir::Vector { 3.f, yPos + 3.f })
+			.setColors(sf::Color::White, sf::Color { 32u, 64u, 0u })
+			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::START_FILE_PROCESSING); });
+
+			auto label { std::make_unique<ir::vgui::Label>("Start processing") };
+			label->setScale(24.f)
+				.setAnchor(ir::vgui::Label::Anchor::OVER);
+
+			button->addChildElement("Label", std::move(label));
+
+		settings_->addChildElement("ButtonStart", std::move(button));
+
+		startProcessingButton_ = settings_->getChild<ir::vgui::FramedElement>("ButtonStart");
+	}
 
 #pragma region Settings accessors
 	bool SettingsUI::resizeEnabled() const {
