@@ -22,6 +22,7 @@ namespace filigree::gui {
 				
 			createUIResize(30.f);
 			createUIWatermark(90.f);
+			createUINoise(240.f);
 
 			createUIStartButton(630.f);
 		}
@@ -50,6 +51,13 @@ namespace filigree::gui {
 			auto labelO { settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Label>("LabelO") };
 			if (labelO) {
 				labelO->setLabel("Opacity: " + std::to_string(watermarkOpacity_->value()));
+			}
+		}
+
+		if (noiseOpacity_) {
+			auto labelO { settings_->getChild<ir::vgui::FramedElement>("FieldNoise")->getChild<ir::vgui::Label>("LabelO") };
+			if (labelO) {
+				labelO->setLabel("Opacity: " + std::to_string(noiseOpacity_->value()));
 			}
 		}
 
@@ -177,6 +185,40 @@ namespace filigree::gui {
 		watermarkOpacity_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Slider>("SliderOpacity");
 	}
 
+	void SettingsUI::createUINoise(float yPos) {
+		auto field { std::make_unique<ir::vgui::FramedElement>() };
+		field->setSize(ir::Vector { 399.f, 60.f })
+			.setPosition(ir::Vector { 0.f, yPos })
+			.setColors(sf::Color::White, sf::Color::Transparent);
+
+			auto check { std::make_unique<ir::vgui::Checkbox>() };
+			check->setChecked(true)
+				.setPosition(ir::Vector { 3.f, 3.f });
+				
+				auto labelCheck { std::make_unique<ir::vgui::Label>("Add pixel noise") };
+				labelCheck->setAnchor(ir::vgui::Label::Anchor::RIGHT);
+
+				check->addChildElement("Label", std::move(labelCheck));
+			field->addChildElement("CheckboxNoise", std::move(check));
+
+			auto labelO { std::make_unique<ir::vgui::Label>("Opacity:") };
+			labelO->setPosition(ir::Vector { 5.f, 34.f });
+			field->addChildElement("LabelO", std::move(labelO));
+
+			auto sliderOpacity { std::make_unique<ir::vgui::Slider>(0, 100) };
+			sliderOpacity->setValue(5)
+				.setPosition(ir::Vector { 133.f, 33.f })
+				.setSize(ir::Vector { 254.f, 24.f })
+				.setColors(sf::Color::White, sf::Color { 96u, 192u, 0u });
+
+			field->addChildElement("SliderOpacity", std::move(sliderOpacity));
+
+		settings_->addChildElement("FieldNoise", std::move(field));
+
+		noiseEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldNoise")->getChild<ir::vgui::Checkbox>("CheckboxNoise");
+		noiseOpacity_ = settings_->getChild<ir::vgui::FramedElement>("FieldNoise")->getChild<ir::vgui::Slider>("SliderOpacity");
+	}
+
 	void SettingsUI::createUIStartButton(float yPos) {
 		auto button { std::make_unique<ir::vgui::FramedElement>() };
 		button->setSize(ir::Vector { 393.f, 54.f })
@@ -220,6 +262,9 @@ namespace filigree::gui {
 		settings.pathOutput = pathOutput;
 		settings.pathFiligree = pathFiligree;
 		settings.pathStamp = pathStamp;
+
+		settings.applyNoise = noiseEnabled_->checked();
+		settings.noiseOpacity = noiseOpacity_->value() * .01f;
 
 		return settings;
 	}

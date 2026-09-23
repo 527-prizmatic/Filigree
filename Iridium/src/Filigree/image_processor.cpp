@@ -39,8 +39,10 @@ namespace filigree {
 		/// Relevant settings checks done inside
 		img = watermark(std::move(img));
 
-	//	img = addGrain(std::move(img));
-
+		if (settings_.applyNoise) {
+			img = addPixelNoise(std::move(img));
+		}
+		
 		if (img->saveToFile(settings_.pathOutput / image.filename())) {
 			LOG_INFO(std::string { "File " } + image.filename().string() + " processed successfully");
 		}
@@ -49,14 +51,14 @@ namespace filigree {
 		}
 	}
 
-	std::unique_ptr<sf::Image> Processor::addGrain(std::unique_ptr<sf::Image> img) {
+	std::unique_ptr<sf::Image> Processor::addPixelNoise(std::unique_ptr<sf::Image> img) {
 		auto ret = std::make_unique<sf::Image>(img->getSize());
 
 		for (unsigned int x = 0; x < img->getSize().x; x++) {
 			for (unsigned int y = 0; y < img->getSize().y; y++) {
 				sf::Color clr { img->getPixel(sf::Vector2u { x, y }) };
 
-				int interval { static_cast<int>(grainStrength * 255) };
+				int interval { static_cast<int>(settings_.noiseOpacity * 255) };
 				clr.r = static_cast<unsigned int>(ir::math::clamp(rand() % (interval * 2) - interval + static_cast<int>(clr.r), 0, 255));
 				clr.g = static_cast<unsigned int>(ir::math::clamp(rand() % (interval * 2) - interval + static_cast<int>(clr.g), 0, 255));
 				clr.b = static_cast<unsigned int>(ir::math::clamp(rand() % (interval * 2) - interval + static_cast<int>(clr.b), 0, 255));
@@ -64,6 +66,7 @@ namespace filigree {
 				ret->setPixel(sf::Vector2u { x, y }, clr);
 			}
 		}
+
 		return ret;
 	}
 

@@ -24,8 +24,10 @@ namespace filigree {
 		bool applyStampTR { false };
 		bool applyStampBL { false };
 		bool applyStampBR { false };
-
 		float watermarkOpacity { .2f };
+
+		bool applyNoise { false };
+		float noiseOpacity { .05f };
 	};
 
 	namespace gui {
@@ -45,6 +47,7 @@ namespace filigree {
 		private:
 			void createUIResize(float yPos);
 			void createUIWatermark(float yPos);
+			void createUINoise(float yPos);
 			void createUIStartButton(float yPos);
 
 			std::unique_ptr<ir::vgui::FramedElement> settings_;
@@ -58,7 +61,11 @@ namespace filigree {
 			ir::vgui::Checkbox* stampTREnabled_ { nullptr };
 			ir::vgui::Checkbox* stampBLEnabled_ { nullptr };
 			ir::vgui::Checkbox* stampBREnabled_ { nullptr };
+
 			ir::vgui::Slider* watermarkOpacity_ { nullptr };
+			
+			ir::vgui::Checkbox* noiseEnabled_ { nullptr };
+			ir::vgui::Slider* noiseOpacity_ { nullptr };
 
 			ir::vgui::FramedElement* startProcessingButton_ { nullptr };
 
