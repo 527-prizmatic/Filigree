@@ -7,6 +7,8 @@
 #include <rendering/model_renderer.hpp>
 #include <rendering/text.hpp>
 
+#include "filepath_funcs.hpp"
+
 namespace filigree::gui {
 	SettingsUI::SettingsUI(filigree::EventQueue &evtQueue) {
 		evtQueue_ = &evtQueue;
@@ -20,10 +22,12 @@ namespace filigree::gui {
 				.setSize(ir::Vector { 399.f, 689.f })
 				.setPosition(ir::Vector { 480.f, 30.f });
 				
+			createTitle(0.f);
 			createUIResize(30.f);
 			createUIWatermark(90.f);
 			createUINoise(240.f);
 
+			createUIPaths(570.f);
 			createUIStartButton(630.f);
 		}
 	}
@@ -61,6 +65,21 @@ namespace filigree::gui {
 			}
 		}
 
+		auto labelO { settings_->getChild<ir::vgui::FramedElement>("FieldPaths")->getChild<ir::vgui::Label>("LabelOutput") };
+		if (labelO) {
+			labelO->setLabel("Output path: " + filigree::shortenPath(pathOutput, 1));
+		}
+
+		auto labelF { settings_->getChild<ir::vgui::FramedElement>("FieldPaths")->getChild<ir::vgui::Label>("LabelFiligree") };
+		if (labelF) {
+			labelF->setLabel("Filigree path: " + filigree::shortenPath(pathFiligree, 1));
+		}
+		
+		auto labelS { settings_->getChild<ir::vgui::FramedElement>("FieldPaths")->getChild<ir::vgui::Label>("LabelStamp") };
+		if (labelS) {
+			labelS->setLabel("Stamp path: " + filigree::shortenPath(pathStamp, 1));
+		}
+
 		if (settings_) {
 			settings_->update(mouseInput);
 		}
@@ -72,6 +91,21 @@ namespace filigree::gui {
 		}
 	}
 	
+	void SettingsUI::createTitle(float yPos) {
+		auto titleField { std::make_unique<ir::vgui::FramedElement>() };
+		titleField->setSize(ir::Vector { 399.f, 30.f })
+			.setPosition(ir::Vector { 0.f, yPos })
+			.setColors(sf::Color::White, sf::Color { 32u, 64u, 0u });
+
+			auto label { std::make_unique<ir::vgui::Label>("Configuration") };
+			label->setScale(15.f)
+				.setAnchor(ir::vgui::Label::Anchor::OVER);
+
+			titleField->addChildElement("Label", std::move(label));
+
+		settings_->addChildElement("Title", std::move(titleField));
+	}
+
 	void SettingsUI::createUIResize(float yPos) {
 		auto field { std::make_unique<ir::vgui::FramedElement>() };
 		field->setSize(ir::Vector { 399.f, 60.f })
@@ -217,6 +251,30 @@ namespace filigree::gui {
 
 		noiseEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldNoise")->getChild<ir::vgui::Checkbox>("CheckboxNoise");
 		noiseOpacity_ = settings_->getChild<ir::vgui::FramedElement>("FieldNoise")->getChild<ir::vgui::Slider>("SliderOpacity");
+	}
+
+	void SettingsUI::createUIPaths(float yPos) {
+		auto field { std::make_unique<ir::vgui::FramedElement>() };
+		field->setSize(ir::Vector { 399.f, 60.f })
+			.setPosition(ir::Vector { 0.f, yPos })
+			.setColors(sf::Color::White, sf::Color::Transparent);
+
+			auto labelO { std::make_unique<ir::vgui::Label>("Output path:") };
+			labelO->setScale(12.f)
+				.setPosition(ir::Vector { 5.f, 3.f });
+			field->addChildElement("LabelOutput", std::move(labelO));
+
+			auto labelF { std::make_unique<ir::vgui::Label>("Filigree path:") };
+			labelF->setScale(12.f)
+				.setPosition(ir::Vector { 5.f, 23.f });
+			field->addChildElement("LabelFiligree", std::move(labelF));
+
+			auto labelS { std::make_unique<ir::vgui::Label>("Stamp path:") };
+			labelS->setScale(12.f)
+				.setPosition(ir::Vector { 5.f, 43.f });
+			field->addChildElement("LabelStamp", std::move(labelS));
+
+		settings_->addChildElement("FieldPaths", std::move(field));
 	}
 
 	void SettingsUI::createUIStartButton(float yPos) {

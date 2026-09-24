@@ -45,9 +45,11 @@ namespace filigree {
 			const ProcessorSettings assembleSettings() const;
 
 		private:
+			void createTitle(float yPos);
 			void createUIResize(float yPos);
 			void createUIWatermark(float yPos);
 			void createUINoise(float yPos);
+			void createUIPaths(float yPos);
 			void createUIStartButton(float yPos);
 
 			std::unique_ptr<ir::vgui::FramedElement> settings_;
