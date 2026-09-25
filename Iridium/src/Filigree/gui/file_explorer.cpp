@@ -71,19 +71,25 @@ namespace filigree::gui {
 	}
 
 	void FileExplorer::update(ir::input::Mouse& mouseInput) {
-		if (fileExplorer_) {
-			auto buttonParent { fileExplorer_->getChild("PathBar")->getChild<ir::vgui::FramedElement>("ButtonParent") };
-			if (buttonParent) {
-				if (activeDir_.has_relative_path()) {
-					buttonParent->setColors(sf::Color(64u, 224u, 128u), sf::Color(64u, 224u, 128u, 32u));
-					buttonParent->getChild<ir::vgui::Icon>("Icon")->setFrameColor(sf::Color(64u, 224u, 128u));
-				}
-				else {
-					buttonParent->setColors(sf::Color(128u, 128u, 128u), sf::Color(128u, 128u, 128u, 32u));
-					buttonParent->getChild<ir::vgui::Icon>("Icon")->setFrameColor(sf::Color(128u, 128u, 128u));
+		auto recolorTitleBarButton = [&](std::string name, bool condition, sf::Color clrTrue, sf::Color clrFalse) {
+			if (fileExplorer_) {
+				auto buttonParent { fileExplorer_->getChild("PathBar")->getChild<ir::vgui::FramedElement>(name) };
+				if (buttonParent) {
+					if (condition) {
+						buttonParent->setColors(clrTrue, sf::Color(clrTrue.r, clrTrue.g, clrTrue.b, 32u));
+						buttonParent->getChild<ir::vgui::Icon>("Icon")->setFrameColor(clrTrue);
+					}
+					else {
+						buttonParent->setColors(clrFalse, sf::Color(clrFalse.r, clrFalse.g, clrFalse.b, 32u));
+						buttonParent->getChild<ir::vgui::Icon>("Icon")->setFrameColor(clrFalse);
+					}
 				}
 			}
-		}
+		};
+
+		recolorTitleBarButton("ButtonPrev", historyPrev_.size() != 0, sf::Color(64u, 224u, 128u), sf::Color(128u, 128u, 128u));
+		recolorTitleBarButton("ButtonNext", historyNext_.size() != 0, sf::Color(64u, 224u, 128u), sf::Color(128u, 128u, 128u));
+		recolorTitleBarButton("ButtonParent", activeDir_.has_relative_path(), sf::Color(64u, 224u, 128u), sf::Color(128u, 128u, 128u));
 
 		if (fileExplorer_->update(mouseInput)) {
 			int id { static_cast<int>((mouseInput.cursorPosition().y - fileExplorer_->position().y) / 30.f) - 1 };
@@ -116,8 +122,35 @@ namespace filigree::gui {
 
 	void FileExplorer::moveToParent() {
 		if (activeDir_.has_relative_path()) {
+			clearHistoryNext();
+			historyPrev_.push_front(activeDir_);
 			setPath(activeDir_.parent_path());
 		}
+	}
+
+	void FileExplorer::moveToHistoryPrev() {
+		if (historyPrev_.size() == 0) {
+			return;
+		}
+		auto path { historyPrev_.front() };
+		historyPrev_.pop_front();
+		historyNext_.push_front(activeDir_);
+		setPath(path);
+	}
+
+	void FileExplorer::moveToHistoryNext() {
+		if (historyNext_.size() == 0) {
+			return;
+		}
+
+		auto path { historyNext_.front() };
+		historyNext_.pop_front();
+		historyPrev_.push_front(activeDir_);
+		setPath(path);
+	}
+
+	void FileExplorer::clearHistoryNext() {
+		historyNext_.clear();
 	}
 
 	void FileExplorer::setPath(std::filesystem::path path) {
@@ -131,11 +164,18 @@ namespace filigree::gui {
 		listOffset_ = 0;
 		populateFileList();
 		updateFileList();
+		
+		LOG_INFO("prev");
+		std::for_each(historyPrev_.begin(), historyPrev_.end(), [&](std::filesystem::path& p) { LOG_INFO(p.string()); });
+		LOG_INFO("next");
+		std::for_each(historyNext_.begin(), historyNext_.end(), [&](std::filesystem::path& p) { LOG_INFO(p.string()); });
 	}
 
 	void FileExplorer::processFileSelection() {
 		if (selectedPath_.has_value()) {
 			if (std::filesystem::is_directory(*selectedPath_)) {
+				clearHistoryNext();
+				historyPrev_.push_front(activeDir_);
 				setPath(*selectedPath_);
 			}
 			else if (isImage(*selectedPath_)) {
@@ -201,12 +241,12 @@ namespace filigree::gui {
 		/// TO BE IMPLEMENTED LATER
 		auto buttonPrev { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "arrow_left", sf::Color(128u, 128u, 128u)) };
 		buttonPrev->setPosition(ir::Vector { 396.f, 2.f })
-			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::DEBUG); });
+			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::HISTORY_PREV); });
 
 		/// TO BE IMPLEMENTED LATER
 		auto buttonNext { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "arrow_right", sf::Color(128u, 128u, 128u)) };
 		buttonNext->setPosition(ir::Vector { 424.f, 2.f })
-			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::DEBUG); });
+			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::HISTORY_NEXT); });
 
 		auto buttonParent { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "folder_exit", sf::Color(64u, 224u, 128u)) };
 		buttonParent->setPosition(ir::Vector { 452.f, 2.f })

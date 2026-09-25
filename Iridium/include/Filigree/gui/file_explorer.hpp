@@ -20,9 +20,12 @@ namespace filigree::gui {
 		std::optional<std::filesystem::path> selectedPath() const { return selectedPath_; }
 
 		void moveToParent();
+		void moveToHistoryPrev();
+		void moveToHistoryNext();
 		void setPath(std::filesystem::path path);
 
 		void processFileSelection();
+		void clearHistoryNext();
 
 	private:
 	//	void createMinimizeButton();
@@ -43,6 +46,9 @@ namespace filigree::gui {
 
 		std::vector<std::filesystem::path> pathList_ {};
 		std::optional<std::filesystem::path> selectedPath_ {};
+
+		std::list<std::filesystem::path> historyPrev_;
+		std::list<std::filesystem::path> historyNext_;
 
 		std::unique_ptr<ir::render::Rectangle> selectionRect_ {};
 	};

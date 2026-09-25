@@ -168,6 +168,16 @@ public:
 						break;
 					}
 
+					case filigree::Event::HISTORY_PREV: {
+						fileExplorer_->moveToHistoryPrev();
+						break;
+					}
+
+					case filigree::Event::HISTORY_NEXT: {
+						fileExplorer_->moveToHistoryNext();
+						break;
+					}
+
 					case filigree::Event::MINIMIZE: {
 						context_->appWindow->minimize();
 						break;
@@ -193,7 +203,6 @@ private:
 	std::unique_ptr<filigree::Processor> processor_;
 
 	std::vector<std::filesystem::path> processingQueue_;
-
 };
 
 #endif // FILIGREE_STATE_ENTRY_HPP_
