@@ -1,8 +1,9 @@
 #include "image_processor.hpp"
 
 namespace filigree {
-	Processor::Processor(filigree::EventQueue& evtQueue) {
+	Processor::Processor(filigree::EventQueue& evtQueue, filigree::gui::ImagePreview* preview) {
 		evtQueue_ = &evtQueue;
+		preview_ = preview;
 	}
 
 	void Processor::loadSettings(ProcessorSettings settings) {
@@ -16,9 +17,11 @@ namespace filigree {
 		for (auto& img : images) {
 			process(img);
 		}
+		preview_->deleteTexture();
 	}
 
 	void Processor::process(std::filesystem::path image) {
+		preview_->prepareTexture(image);
 		auto img = std::make_unique<sf::Image>(image);
 		outputSize_ = ir::Vector::fromSFMLVector(img->getSize());
 

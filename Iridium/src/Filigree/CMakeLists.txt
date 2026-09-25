@@ -5,4 +5,5 @@ target_sources(${PROJECT_NAME} PRIVATE
 	"gui/file_explorer.cpp"
 	"gui/settings.cpp"
 	"gui/file_queue.cpp"
+	"gui/image_preview.cpp"
 )

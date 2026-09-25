@@ -58,6 +58,12 @@ namespace ir {
 		//	void removeChildElement(ir::vgui::Element* child);
 		//	void removeParent();
 
+			template <typename T, typename... Args>
+			T& addChildElement(std::string key, Args... args) {
+				auto el { std::unique_ptr<T>(args...) };
+				return addChildElement(key, std::move(el));
+			}
+
 			virtual ir::vgui::Element& setPosition(ir::Vector pos); ///< @brief Sets position relative to the parent (or the window if there is none)
 			virtual ir::vgui::Element& setSize(ir::Vector size); ///< @brief Sets element size, in pixels
 

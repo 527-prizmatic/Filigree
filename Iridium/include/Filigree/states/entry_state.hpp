@@ -11,6 +11,7 @@
 #include "gui/file_explorer.hpp"
 #include "gui/settings.hpp"
 #include "gui/file_queue.hpp"
+#include "gui/image_preview.hpp"
 #include "image_processor.hpp"
 
 class EntryState : public ir::StateBase<EntryState> {
@@ -23,7 +24,9 @@ public:
 		fileExplorer_ = std::make_unique<filigree::gui::FileExplorer>(evtQueue_);
 		settings_ = std::make_unique<filigree::gui::SettingsUI>(evtQueue_);
 		fileQueue_ = std::make_unique<filigree::gui::FileQueue>(evtQueue_);
-		processor_ = std::make_unique<filigree::Processor>(evtQueue_);
+		preview_ = std::make_unique<filigree::gui::ImagePreview>(evtQueue_);
+
+		processor_ = std::make_unique<filigree::Processor>(evtQueue_, &*preview_);
 
 		fileQueue_->setWatchedQueue(&processingQueue_);
 	}
@@ -59,6 +62,11 @@ public:
 			fileQueue_->update(*context_->mouse);
 		}
 
+		if (preview_) {
+			preview_->updateSpinnerAngle(context_->deltaTime());
+			preview_->update(*context_->mouse);
+		}
+
 		processEvents();
 	}
 
@@ -77,6 +85,10 @@ public:
 		
 		if (fileQueue_) {
 			fileQueue_->render(*context_->vertexRenderer);
+		}
+
+		if (preview_) {
+			preview_->render(*context_->vertexRenderer);
 		}
 	}
 
@@ -199,6 +211,7 @@ private:
 	std::unique_ptr<filigree::gui::FileExplorer> fileExplorer_;
 	std::unique_ptr<filigree::gui::SettingsUI> settings_;
 	std::unique_ptr<filigree::gui::FileQueue> fileQueue_;
+	std::unique_ptr<filigree::gui::ImagePreview> preview_;
 
 	std::unique_ptr<filigree::Processor> processor_;
 
