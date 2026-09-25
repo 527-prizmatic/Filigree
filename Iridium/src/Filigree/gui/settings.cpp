@@ -20,7 +20,7 @@ namespace filigree::gui {
 		else {
 			settings_->setColors(sf::Color::White, sf::Color { 8u, 16u, 0u })
 				.setSize(ir::Vector { 399.f, 689.f })
-				.setPosition(ir::Vector { 480.f, 30.f });
+				.setPosition(ir::Vector { 481.f, 30.f });
 				
 			createTitle(0.f);
 			createUIResize(30.f);
@@ -279,7 +279,7 @@ namespace filigree::gui {
 
 	void SettingsUI::createUIStartButton(float yPos) {
 		auto button { std::make_unique<ir::vgui::FramedElement>() };
-		button->setSize(ir::Vector { 393.f, 54.f })
+		button->setSize(ir::Vector { 393.f, 53.f })
 			.setPosition(ir::Vector { 3.f, yPos + 3.f })
 			.setColors(sf::Color::White, sf::Color { 32u, 64u, 0u })
 			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::START_FILE_PROCESSING); });

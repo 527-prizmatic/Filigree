@@ -3,7 +3,7 @@
 
 #include <string>
 #include "vgui/element.hpp"
-// #include "rendering/text.hpp"
+#include "rendering/text.hpp"
 
 namespace ir {
 	namespace render {

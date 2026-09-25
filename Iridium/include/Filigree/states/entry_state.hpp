@@ -10,6 +10,7 @@
 #include "gui/title_bar.hpp"
 #include "gui/file_explorer.hpp"
 #include "gui/settings.hpp"
+#include "gui/file_queue.hpp"
 #include "image_processor.hpp"
 
 class EntryState : public ir::StateBase<EntryState> {
@@ -21,16 +22,23 @@ public:
 		titleBar_ = std::make_unique<filigree::gui::TitleBar>(evtQueue_);
 		fileExplorer_ = std::make_unique<filigree::gui::FileExplorer>(evtQueue_);
 		settings_ = std::make_unique<filigree::gui::SettingsUI>(evtQueue_);
+		fileQueue_ = std::make_unique<filigree::gui::FileQueue>(evtQueue_);
 		processor_ = std::make_unique<filigree::Processor>(evtQueue_);
+
+		fileQueue_->setWatchedQueue(&processingQueue_);
 	}
 
 	void onReceiveEvent(const sf::Event& event) {
 		if (fileExplorer_) {
-			fileExplorer_->processEvent(event);
+			fileExplorer_->processEvent(event, *context_->mouse);
 		}
 		
 		if (settings_) {
 			settings_->processEvent(event);
+		}
+
+		if (fileQueue_) {
+			fileQueue_->processEvent(event, *context_->mouse);
 		}
 	}
 
@@ -47,6 +55,10 @@ public:
 			settings_->update(*context_->mouse);
 		}
 
+		if (fileQueue_) {
+			fileQueue_->update(*context_->mouse);
+		}
+
 		processEvents();
 	}
 
@@ -61,6 +73,10 @@ public:
 		
 		if (settings_) {
 			settings_->render(*context_->vertexRenderer);
+		}
+		
+		if (fileQueue_) {
+			fileQueue_->render(*context_->vertexRenderer);
 		}
 	}
 
@@ -89,31 +105,36 @@ public:
 						break;
 					}
 
+					case filigree::Event::CLEAR_QUEUE: {
+						LOG_INFO("Clearing processing queue");
+						processingQueue_.clear();
+						break;
+					}
+
 					case filigree::Event::QUEUE_FILE_PROCESSING: {
 						auto path { fileExplorer_->selectedPath() };
+						
 						if (path.has_value()) {
-							int id { -1 };
-							for (size_t i = 0; i < processingQueue_.size(); i++) {
-								if (processingQueue_[i] == *path) {
-									id = i;
-									break;
-								}
-							}
-
-							if (id == -1) {
+							/// Add if not already present
+							if (std::find(processingQueue_.begin(), processingQueue_.end(), *path) == processingQueue_.end()) {
 								processingQueue_.push_back(*path);
 							}
-							else {
-								processingQueue_.erase(processingQueue_.begin() + id);
-							}
-						}
-
-						std::sort(processingQueue_.begin(), processingQueue_.end(),
-							[](const std::filesystem::path& a, const std::filesystem::path& b) { return a.filename().string() < b.filename().string(); }
-						);
-
-						for (auto& path : processingQueue_) {
-							LOG_INFO(path.parent_path().filename().string() + " / " + path.filename().string());
+							
+							/// Sort paths alphabetically regardless of case
+							std::sort(processingQueue_.begin(), processingQueue_.end(),
+								[](const std::filesystem::path& a, const std::filesystem::path& b) {
+									std::string aLower { a.filename().string() };
+									std::transform(aLower.begin(), aLower.end(), aLower.begin(), ::tolower);
+									
+									std::string bLower { b.filename().string() };
+									std::transform(bLower.begin(), bLower.end(), bLower.begin(), ::tolower);
+									
+									return aLower < bLower;
+								}
+							);
+							
+							/// Update file queue display
+							fileQueue_->updateFileList();
 						}
 
 						break;
@@ -143,6 +164,7 @@ public:
 							processingQueue_.clear(); ///< Preparing for the next round
 						}
 
+						fileQueue_->updateFileList();
 						break;
 					}
 
@@ -166,6 +188,7 @@ private:
 	std::unique_ptr<filigree::gui::TitleBar> titleBar_;
 	std::unique_ptr<filigree::gui::FileExplorer> fileExplorer_;
 	std::unique_ptr<filigree::gui::SettingsUI> settings_;
+	std::unique_ptr<filigree::gui::FileQueue> fileQueue_;
 
 	std::unique_ptr<filigree::Processor> processor_;
 

@@ -4,33 +4,33 @@
 #include <libraries.hpp>
 
 namespace filigree {
-    std::string shortenPath(std::filesystem::path& path, size_t maxLength) {
-        std::string shortened { };
-        std::string separator { " / " };
+	inline std::string shortenPath(std::filesystem::path& path, size_t maxLength) {
+		std::string shortened { };
+		std::string separator { " / " };
 
-        if (path.has_relative_path()) {
-            std::vector<std::string> dirs { };
-            for (auto& dir : path.parent_path()) {
-                dirs.push_back(dir.string());
-            }
+		if (path.has_relative_path()) {
+			std::vector<std::string> dirs { };
+			for (auto& dir : path.parent_path()) {
+				dirs.push_back(dir.string());
+			}
 
-            if (dirs.size() > maxLength) {
-                shortened += "..." + separator;
-                for (size_t i = dirs.size() - maxLength; i < dirs.size(); i++) {
-                    shortened += dirs[i] + separator;
-                }
-            }
-            else {
-                for (auto& dir : dirs) {
-                    shortened += dir + separator;
-                }
-            }
-        }
+			if (dirs.size() > maxLength) {
+				shortened += "..." + separator;
+				for (size_t i = dirs.size() - maxLength; i < dirs.size(); i++) {
+					shortened += dirs[i] + separator;
+				}
+			}
+			else {
+				for (auto& dir : dirs) {
+					shortened += dir + separator;
+				}
+			}
+		}
 
-        shortened += path.filename().string();
+		shortened += path.filename().string();
 
-        return shortened;
-    }
+		return shortened;
+	}
 }
 
 #endif // FILIGREE_FILEPATH_FUNCS_HPP_

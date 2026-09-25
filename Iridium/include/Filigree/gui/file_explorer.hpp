@@ -12,7 +12,7 @@ namespace filigree::gui {
 	public:
 		FileExplorer(filigree::EventQueue& evtQueue);
 
-		void processEvent(const sf::Event& evt);
+		void processEvent(const sf::Event& evt, ir::input::Mouse& mouseInput);
 		void update(ir::input::Mouse& mouseInput);
 		void render(ir::render::VertexRenderer& renderer) const;
 
