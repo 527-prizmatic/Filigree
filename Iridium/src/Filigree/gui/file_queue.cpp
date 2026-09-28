@@ -106,15 +106,15 @@ namespace filigree::gui {
 			auto labelTitle { std::make_unique<ir::vgui::Label>("Processing queue") };
 			labelTitle->setPosition(ir::Vector { 6.f, 6.f });
 			
-			field->addChildElement("LabelTitle", std::move(labelTitle));
+			field->setChildElement("LabelTitle", std::move(labelTitle));
 
 			auto buttonClear { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "trash", sf::Color(224u, 64u, 128u)) };
 			buttonClear->setPosition(ir::Vector { 372.f, 2.f })
 				.registerClickEvent([&]() { evtQueue_->add(filigree::Event::CLEAR_QUEUE); });
 			
-			field->addChildElement("ButtonClear", std::move(buttonClear));
+			field->setChildElement("ButtonClear", std::move(buttonClear));
 
-		fileQueue_->addChildElement("FieldTitle", std::move(field));
+		fileQueue_->setChildElement("FieldTitle", std::move(field));
 	}
 
 	void FileQueue::createUIFileList() {
@@ -128,9 +128,9 @@ namespace filigree::gui {
 				label->setScale(12.f)
 					.setPosition(ir::Vector { 3.f, 1.f });
 
-				el->addChildElement("Label", std::move(label));
+				el->setChildElement("Label", std::move(label));
 
-			fileQueue_->addChildElement(std::string { "Field" } + std::to_string(i), std::move(el));
+			fileQueue_->setChildElement(std::string { "Field" } + std::to_string(i), std::move(el));
 		}
 	}
 

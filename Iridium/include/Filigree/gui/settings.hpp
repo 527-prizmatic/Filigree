@@ -28,6 +28,8 @@ namespace filigree {
 
 		bool applyNoise { false };
 		float noiseOpacity { .05f };
+
+		char colorDepth { 2u };
 	};
 
 	namespace gui {
@@ -49,6 +51,7 @@ namespace filigree {
 			void createUIResize(float yPos);
 			void createUIWatermark(float yPos);
 			void createUINoise(float yPos);
+			void createUIDepth(float yPos);
 			void createUIPaths(float yPos);
 			void createUIStartButton(float yPos);
 
@@ -68,6 +71,7 @@ namespace filigree {
 			
 			ir::vgui::Checkbox* noiseEnabled_ { nullptr };
 			ir::vgui::Slider* noiseOpacity_ { nullptr };
+			ir::vgui::Slider* colorDepth_ { nullptr };
 
 			ir::vgui::FramedElement* startProcessingButton_ { nullptr };
 

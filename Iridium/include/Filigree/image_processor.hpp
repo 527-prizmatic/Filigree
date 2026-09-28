@@ -20,6 +20,7 @@ namespace filigree {
 		std::unique_ptr<sf::Image> addPixelNoise(std::unique_ptr<sf::Image> img);
 		std::unique_ptr<sf::Image> resize(std::unique_ptr<sf::Image> img);
 		std::unique_ptr<sf::Image> watermark(std::unique_ptr<sf::Image> img);
+		std::unique_ptr<sf::Image> colorDepth(std::unique_ptr<sf::Image> img);
 		
 	private:	
 		std::unique_ptr<sf::Image> assembleWatermark();
@@ -28,7 +29,6 @@ namespace filigree {
 		std::unique_ptr<sf::Image> stamp_;
 
 		filigree::EventQueue* evtQueue_ { nullptr };
-		float grainStrength { .01f };
 
 		// Settings
 		ProcessorSettings settings_;

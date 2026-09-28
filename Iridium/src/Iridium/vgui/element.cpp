@@ -96,7 +96,7 @@ namespace ir::vgui {
 	}
 	*/
 
-	ir::vgui::Element& Element::addChildElement(std::string key, std::unique_ptr<ir::vgui::Element> child) {
+	ir::vgui::Element& Element::setChildElement(std::string key, std::unique_ptr<ir::vgui::Element> child) {
 		if (child) {
 			child->parent_ = this;
 			children_[key] = std::move(child);

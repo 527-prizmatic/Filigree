@@ -53,15 +53,18 @@ namespace ir {
 		//	Element* operator[](const char* key) const;
 
 			/// @brief Adds a child to this element and assigns it the given key for later lookup.
-			ir::vgui::Element& addChildElement(std::string key, std::unique_ptr<ir::vgui::Element> child);
+			ir::vgui::Element& setChildElement(std::string key, std::unique_ptr<ir::vgui::Element> child);
 		//	void removeChildElement(std::string key);
 		//	void removeChildElement(ir::vgui::Element* child);
 		//	void removeParent();
 
 			template <typename T, typename... Args>
-			T& addChildElement(std::string key, Args... args) {
-				auto el { std::unique_ptr<T>(args...) };
-				return addChildElement(key, std::move(el));
+			T* addChildElement(std::string key, Args... args) {
+				auto el { std::make_unique<T>(args...) };
+				el->parent_ = this;
+				children_[key] = std::move(el);
+				children_[key]->resizeRectangle();
+				return dynamic_cast<T*>(&*children_[key]);
 			}
 
 			virtual ir::vgui::Element& setPosition(ir::Vector pos); ///< @brief Sets position relative to the parent (or the window if there is none)

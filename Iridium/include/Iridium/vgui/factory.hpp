@@ -18,7 +18,7 @@ namespace ir::vgui {
 			.setFrameColor(clr)
 			.setPosition(ir::Vector { 2.f, 2.f });
 
-		button->addChildElement("Icon", std::move(icon));
+		button->setChildElement("Icon", std::move(icon));
 		return button;
 	}
 }

@@ -50,8 +50,8 @@ namespace filigree::gui {
 			.setFrameColor(sf::Color(32u, 224u, 192u, 255u))
 			.setPosition(ir::Vector { 2.f, 19.f });
 
-		buttonMinimize->addChildElement("Icon", std::move(icon));
-		titleBar_->addChildElement("ButtonMinimize", std::move(buttonMinimize));
+		buttonMinimize->setChildElement("Icon", std::move(icon));
+		titleBar_->setChildElement("ButtonMinimize", std::move(buttonMinimize));
 	}
 
 	void TitleBar::createExitButton() {
@@ -66,8 +66,8 @@ namespace filigree::gui {
 			.setFrameColor(sf::Color(224u, 48u, 92u, 255u))
 			.setPosition(ir::Vector { 2.f, 2.f });
 
-		buttonExit->addChildElement("Icon", std::move(icon));
-		titleBar_->addChildElement("ButtonExit", std::move(buttonExit));
+		buttonExit->setChildElement("Icon", std::move(icon));
+		titleBar_->setChildElement("ButtonExit", std::move(buttonExit));
 	}
 
 	void TitleBar::createTitle() {
@@ -76,6 +76,6 @@ namespace filigree::gui {
 		title->setAnchor(ir::vgui::Label::Anchor::OVER);
 		title->setLabel("Filigree --- Image Watermarker");
 		title->setColor(sf::Color { 192u, 128u, 255u });
-		titleBar_->addChildElement("Title", std::move(title));
+		titleBar_->setChildElement("Title", std::move(title));
 	}
 }

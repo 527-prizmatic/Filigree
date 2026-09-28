@@ -26,6 +26,7 @@ namespace filigree::gui {
 			createUIResize(30.f);
 			createUIWatermark(90.f);
 			createUINoise(240.f);
+			createUIDepth(300.f);
 
 			createUIPaths(570.f);
 			createUIStartButton(630.f);
@@ -65,6 +66,11 @@ namespace filigree::gui {
 			}
 		}
 
+		auto labelD { settings_->getChild<ir::vgui::FramedElement>("FieldDepth")->getChild<ir::vgui::Label>("Label") };
+		if (labelD) {
+			labelD->setLabel("Color depth: " + std::to_string(colorDepth_->value()) + " bits");
+		}
+
 		auto labelO { settings_->getChild<ir::vgui::FramedElement>("FieldPaths")->getChild<ir::vgui::Label>("LabelOutput") };
 		if (labelO) {
 			labelO->setLabel("Output path: " + filigree::shortenPath(pathOutput, 1));
@@ -79,7 +85,7 @@ namespace filigree::gui {
 		if (labelS) {
 			labelS->setLabel("Stamp path: " + filigree::shortenPath(pathStamp, 1));
 		}
-
+		
 		if (settings_) {
 			settings_->update(mouseInput);
 		}
@@ -101,9 +107,9 @@ namespace filigree::gui {
 			label->setScale(15.f)
 				.setAnchor(ir::vgui::Label::Anchor::OVER);
 
-			titleField->addChildElement("Label", std::move(label));
+			titleField->setChildElement("Label", std::move(label));
 
-		settings_->addChildElement("Title", std::move(titleField));
+		settings_->setChildElement("Title", std::move(titleField));
 	}
 
 	void SettingsUI::createUIResize(float yPos) {
@@ -128,13 +134,13 @@ namespace filigree::gui {
 				auto labelResize { std::make_unique<ir::vgui::Label>("Largest dimension") };
 				labelResize->setAnchor(ir::vgui::Label::Anchor::RIGHT);
 
-				check->addChildElement("Label", std::move(labelCheck));
-			field->addChildElement("CheckboxResize", std::move(check));
+				check->setChildElement("Label", std::move(labelCheck));
+			field->setChildElement("CheckboxResize", std::move(check));
 
-				resize->addChildElement("Label", std::move(labelResize));
-			field->addChildElement("Resolution", std::move(resize));
+				resize->setChildElement("Label", std::move(labelResize));
+			field->setChildElement("Resolution", std::move(resize));
 		
-		settings_->addChildElement("FieldResize", std::move(field));
+		settings_->setChildElement("FieldResize", std::move(field));
 
 		resizeEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldResize")->getChild<ir::vgui::Checkbox>("CheckboxResize");
 		resizeSize_ = settings_->getChild<ir::vgui::FramedElement>("FieldResize")->getChild<ir::vgui::IntField>("Resolution");
@@ -153,12 +159,12 @@ namespace filigree::gui {
 				auto labelF { std::make_unique<ir::vgui::Label>("Apply filigree") };
 				labelF->setAnchor(ir::vgui::Label::Anchor::RIGHT);
 
-				checkF->addChildElement("Label", std::move(labelF));
-			field->addChildElement("CheckF", std::move(checkF));
+				checkF->setChildElement("Label", std::move(labelF));
+			field->setChildElement("CheckF", std::move(checkF));
 
 			auto labelS { std::make_unique<ir::vgui::Label>("Apply stamps:") };
 			labelS->setPosition(ir::Vector { 5.f, 34.f });
-			field->addChildElement("LabelS", std::move(labelS));
+			field->setChildElement("LabelS", std::move(labelS));
 
 			auto checkTL { std::make_unique<ir::vgui::Checkbox>() };
 			checkTL->setPosition(ir::Vector { 3.f, 63.f });
@@ -166,8 +172,8 @@ namespace filigree::gui {
 				auto labelTL { std::make_unique<ir::vgui::Label>("Top left") };
 				labelTL->setAnchor(ir::vgui::Label::Anchor::RIGHT);
 
-				checkTL->addChildElement("Label", std::move(labelTL));
-			field->addChildElement("CheckTL", std::move(checkTL));
+				checkTL->setChildElement("Label", std::move(labelTL));
+			field->setChildElement("CheckTL", std::move(checkTL));
 
 			auto checkTR { std::make_unique<ir::vgui::Checkbox>() };
 			checkTR->setPosition(ir::Vector { 372.f, 63.f });
@@ -175,8 +181,8 @@ namespace filigree::gui {
 				auto labelTR { std::make_unique<ir::vgui::Label>("Top right") };
 				labelTR->setAnchor(ir::vgui::Label::Anchor::LEFT);
 
-				checkTR->addChildElement("Label", std::move(labelTR));
-			field->addChildElement("CheckTR", std::move(checkTR));
+				checkTR->setChildElement("Label", std::move(labelTR));
+			field->setChildElement("CheckTR", std::move(checkTR));
 
 			auto checkBL { std::make_unique<ir::vgui::Checkbox>() };
 			checkBL->setPosition(ir::Vector { 3.f, 93.f });
@@ -184,8 +190,8 @@ namespace filigree::gui {
 				auto labelBL { std::make_unique<ir::vgui::Label>("Bottom left") };
 				labelBL->setAnchor(ir::vgui::Label::Anchor::RIGHT);
 
-				checkBL->addChildElement("Label", std::move(labelBL));
-			field->addChildElement("CheckBL", std::move(checkBL));
+				checkBL->setChildElement("Label", std::move(labelBL));
+			field->setChildElement("CheckBL", std::move(checkBL));
 
 			auto checkBR { std::make_unique<ir::vgui::Checkbox>() };
 			checkBR->setChecked(true)
@@ -194,12 +200,12 @@ namespace filigree::gui {
 				auto labelBR { std::make_unique<ir::vgui::Label>("Bottom right") };
 				labelBR->setAnchor(ir::vgui::Label::Anchor::LEFT);
 
-				checkBR->addChildElement("Label", std::move(labelBR));
-			field->addChildElement("CheckBR", std::move(checkBR));
+				checkBR->setChildElement("Label", std::move(labelBR));
+			field->setChildElement("CheckBR", std::move(checkBR));
 
 			auto labelO { std::make_unique<ir::vgui::Label>("Opacity:") };
 			labelO->setPosition(ir::Vector { 5.f, 124.f });
-			field->addChildElement("LabelO", std::move(labelO));
+			field->setChildElement("LabelO", std::move(labelO));
 
 			auto sliderOpacity { std::make_unique<ir::vgui::Slider>(0, 100) };
 			sliderOpacity->setValue(20)
@@ -207,9 +213,9 @@ namespace filigree::gui {
 				.setSize(ir::Vector { 254.f, 24.f })
 				.setColors(sf::Color::White, sf::Color { 96u, 192u, 0u });
 
-			field->addChildElement("SliderOpacity", std::move(sliderOpacity));
+			field->setChildElement("SliderOpacity", std::move(sliderOpacity));
 
-		settings_->addChildElement("FieldWatermark", std::move(field));
+		settings_->setChildElement("FieldWatermark", std::move(field));
 
 		filigreeEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckF");
 		stampTLEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckTL");
@@ -232,12 +238,12 @@ namespace filigree::gui {
 				auto labelCheck { std::make_unique<ir::vgui::Label>("Add pixel noise") };
 				labelCheck->setAnchor(ir::vgui::Label::Anchor::RIGHT);
 
-				check->addChildElement("Label", std::move(labelCheck));
-			field->addChildElement("CheckboxNoise", std::move(check));
+				check->setChildElement("Label", std::move(labelCheck));
+			field->setChildElement("CheckboxNoise", std::move(check));
 
 			auto labelO { std::make_unique<ir::vgui::Label>("Opacity:") };
 			labelO->setPosition(ir::Vector { 5.f, 34.f });
-			field->addChildElement("LabelO", std::move(labelO));
+			field->setChildElement("LabelO", std::move(labelO));
 
 			auto sliderOpacity { std::make_unique<ir::vgui::Slider>(0, 100) };
 			sliderOpacity->setValue(5)
@@ -245,12 +251,29 @@ namespace filigree::gui {
 				.setSize(ir::Vector { 254.f, 24.f })
 				.setColors(sf::Color::White, sf::Color { 96u, 192u, 0u });
 
-			field->addChildElement("SliderOpacity", std::move(sliderOpacity));
+			field->setChildElement("SliderOpacity", std::move(sliderOpacity));
 
-		settings_->addChildElement("FieldNoise", std::move(field));
+		settings_->setChildElement("FieldNoise", std::move(field));
 
 		noiseEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldNoise")->getChild<ir::vgui::Checkbox>("CheckboxNoise");
 		noiseOpacity_ = settings_->getChild<ir::vgui::FramedElement>("FieldNoise")->getChild<ir::vgui::Slider>("SliderOpacity");
+	}
+
+	void SettingsUI::createUIDepth(float yPos) {
+		auto field { settings_->addChildElement<ir::vgui::FramedElement>("FieldDepth") };
+		field->setSize(ir::Vector { 399.f, 30.f })
+			.setPosition(ir::Vector { 0.f, yPos })
+			.setColors(sf::Color::White, sf::Color::Transparent);
+
+		auto label { field->addChildElement<ir::vgui::Label>("Label", "Color depth:") };
+		label->setPosition(ir::Vector { 5.f, 4.f });
+
+		auto slider { field->addChildElement<ir::vgui::Slider>("SliderDepth", 1, 8) };
+		slider->setValue(8)
+			.setPosition(ir::Vector { 203.f, 3.f })
+			.setSize(ir::Vector { 184.f, 24.f })
+			.setColors(sf::Color::White, sf::Color { 96u, 192u, 0u });
+		colorDepth_ = slider;
 	}
 
 	void SettingsUI::createUIPaths(float yPos) {
@@ -262,19 +285,19 @@ namespace filigree::gui {
 			auto labelO { std::make_unique<ir::vgui::Label>("Output path:") };
 			labelO->setScale(12.f)
 				.setPosition(ir::Vector { 5.f, 3.f });
-			field->addChildElement("LabelOutput", std::move(labelO));
+			field->setChildElement("LabelOutput", std::move(labelO));
 
 			auto labelF { std::make_unique<ir::vgui::Label>("Filigree path:") };
 			labelF->setScale(12.f)
 				.setPosition(ir::Vector { 5.f, 23.f });
-			field->addChildElement("LabelFiligree", std::move(labelF));
+			field->setChildElement("LabelFiligree", std::move(labelF));
 
 			auto labelS { std::make_unique<ir::vgui::Label>("Stamp path:") };
 			labelS->setScale(12.f)
 				.setPosition(ir::Vector { 5.f, 43.f });
-			field->addChildElement("LabelStamp", std::move(labelS));
+			field->setChildElement("LabelStamp", std::move(labelS));
 
-		settings_->addChildElement("FieldPaths", std::move(field));
+		settings_->setChildElement("FieldPaths", std::move(field));
 	}
 
 	void SettingsUI::createUIStartButton(float yPos) {
@@ -288,9 +311,9 @@ namespace filigree::gui {
 			label->setScale(24.f)
 				.setAnchor(ir::vgui::Label::Anchor::OVER);
 
-			button->addChildElement("Label", std::move(label));
+			button->setChildElement("Label", std::move(label));
 
-		settings_->addChildElement("ButtonStart", std::move(button));
+		settings_->setChildElement("ButtonStart", std::move(button));
 
 		startProcessingButton_ = settings_->getChild<ir::vgui::FramedElement>("ButtonStart");
 	}
@@ -323,6 +346,8 @@ namespace filigree::gui {
 
 		settings.applyNoise = noiseEnabled_->checked();
 		settings.noiseOpacity = noiseOpacity_->value() * .01f;
+
+		settings.colorDepth = colorDepth_->value();
 
 		return settings;
 	}

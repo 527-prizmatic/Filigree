@@ -29,6 +29,10 @@ namespace filigree {
 			img = resize(std::move(img));
 		}
 
+		if (settings_.colorDepth != 8) {
+			img = colorDepth(std::move(img));
+		}
+
 		if (settings_.applyNoise) {
 			img = addPixelNoise(std::move(img));
 		}
@@ -117,7 +121,7 @@ namespace filigree {
 	}
 
 	std::unique_ptr<sf::Image> Processor::watermark(std::unique_ptr<sf::Image> img) {
-		ir::Vector imageCenter { outputSize_.x * .5f, outputSize_.y * .5f };
+	ir::Vector imageCenter { outputSize_.x * .5f, outputSize_.y * .5f };
 
 		auto colorBlend { [&](sf::Color clrI, sf::Color clrF, float opacity, unsigned int x, unsigned int y) -> sf::Color {
 			if (clrF.a > 128) {
@@ -172,6 +176,22 @@ namespace filigree {
 			}
 		}
 
+		return img;
+	}
+
+	std::unique_ptr<sf::Image> Processor::colorDepth(std::unique_ptr<sf::Image> img) {
+		for (unsigned int x = 0; x < img->getSize().x; x++) {
+			for (unsigned int y = 0; y < img->getSize().y; y++) {
+				sf::Vector2u pos { x, y };
+				sf::Color clr { img->getPixel(pos) };
+				for (int i = 0; i < 8 - settings_.colorDepth; i++) {
+					clr.r = ~(~clr.r & ~(1 << i)); 
+					clr.g = ~(~clr.g & ~(1 << i)); 
+					clr.b = ~(~clr.b & ~(1 << i)); 
+				}
+				img->setPixel(pos, clr);
+			}
+		}
 		return img;
 	}
 

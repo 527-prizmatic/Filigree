@@ -252,12 +252,12 @@ namespace filigree::gui {
 		buttonParent->setPosition(ir::Vector { 452.f, 2.f })
 			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::MOVE_TO_PARENT_FOLDER); });
 		
-		bar->addChildElement("PathLabel", std::move(pathLabel));
-		bar->addChildElement("ButtonPrev", std::move(buttonPrev));
-		bar->addChildElement("ButtonNext", std::move(buttonNext));
-		bar->addChildElement("ButtonParent", std::move(buttonParent));
+		bar->setChildElement("PathLabel", std::move(pathLabel));
+		bar->setChildElement("ButtonPrev", std::move(buttonPrev));
+		bar->setChildElement("ButtonNext", std::move(buttonNext));
+		bar->setChildElement("ButtonParent", std::move(buttonParent));
 
-		fileExplorer_->addChildElement("PathBar", std::move(bar));
+		fileExplorer_->setChildElement("PathBar", std::move(bar));
 	}
 
 	void FileExplorer::createFileFields() {
@@ -270,11 +270,11 @@ namespace filigree::gui {
 			auto label { std::make_unique<ir::vgui::Label>() };
 			label->setPosition(ir::Vector { 6.f, 5.f });
 
-			el->addChildElement("Label", std::move(label));
+			el->setChildElement("Label", std::move(label));
 
 			el->registerClickEvent([&]() { evtQueue_->add(filigree::Event::SELECT_FILE); });
 			
-			fileExplorer_->addChildElement(std::string { "Field" } + std::to_string(i), std::move(el));
+			fileExplorer_->setChildElement(std::string { "Field" } + std::to_string(i), std::move(el));
 		}
 	}
 

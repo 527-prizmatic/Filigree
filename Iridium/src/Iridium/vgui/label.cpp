@@ -119,9 +119,9 @@ namespace ir::vgui {
 	}
 
 	ir::vgui::Element& Label::setPosition(ir::Vector pos) {
-		if (parent_ == nullptr) {
+	//	if (parent_ == nullptr) {
 			pos_ = pos;
-		}
+	//	}
 		return *this;
 	}
 }
