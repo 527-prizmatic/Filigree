@@ -6,11 +6,12 @@
 
 #include "events.hpp"
 #include "gui/settings.hpp"
+#include "gui/image_preview.hpp"
 
 namespace filigree {
 	class Processor {
 	public:
-		Processor(filigree::EventQueue& evtQueue);
+		Processor(filigree::EventQueue& evtQueue, filigree::gui::ImagePreview* preview);
 
 		void loadSettings(ProcessorSettings settings);
 		void process(std::vector<std::filesystem::path> images);
@@ -32,6 +33,8 @@ namespace filigree {
 		// Settings
 		ProcessorSettings settings_;
 		ir::Vector outputSize_ {};
+
+		filigree::gui::ImagePreview* preview_;
 	};
 }
 

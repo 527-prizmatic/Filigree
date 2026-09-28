@@ -10,9 +10,13 @@ namespace filigree {
 
 		SELECT_FILE,
 		MOVE_TO_PARENT_FOLDER,
+		CLEAR_QUEUE,
 
 		QUEUE_FILE_PROCESSING,
 		START_FILE_PROCESSING,
+
+		HISTORY_PREV,
+		HISTORY_NEXT,
 
 		MINIMIZE, // Minimize window
 		EXIT, // Exit application
