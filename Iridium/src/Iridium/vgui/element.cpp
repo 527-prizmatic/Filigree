@@ -57,6 +57,9 @@ namespace ir::vgui {
 			}
 			else {
 				onIdle();
+				for (auto evt : idleEvents) {
+					evt();
+				}
 			}
 		}
 
@@ -121,6 +124,11 @@ namespace ir::vgui {
 	
 	ir::vgui::Element& Element::registerHoverEvent(ir::vgui::ClickEvent event) {
 		hoverEvents.push_back(std::move(event));
+		return *this;
+	}
+	
+	ir::vgui::Element& Element::registerIdleEvent(ir::vgui::ClickEvent event) {
+		idleEvents.push_back(std::move(event));
 		return *this;
 	}
 	

@@ -85,6 +85,7 @@ namespace ir {
 			
 			ir::vgui::Element& registerClickEvent(ir::vgui::ClickEvent event);
 			ir::vgui::Element& registerHoverEvent(ir::vgui::ClickEvent event);
+			ir::vgui::Element& registerIdleEvent(ir::vgui::ClickEvent event);
 			ir::vgui::Element& registerReleaseEvent(ir::vgui::ClickEvent event);
 			void processEvent(const sf::Event& evt); ///< @brief Recursively processes SFML events for the element, as well as its children.
 
@@ -131,6 +132,7 @@ namespace ir {
 			/// @brief Additional user-defined click events.
 			std::vector<ir::vgui::ClickEvent> clickEvents {};
 			std::vector<ir::vgui::ClickEvent> hoverEvents {};
+			std::vector<ir::vgui::ClickEvent> idleEvents {};
 			std::vector<ir::vgui::ClickEvent> releaseEvents {};
 
 			bool clickHeld_ { false }; ///< @brief Whether left-click is held (for event detection purposes)

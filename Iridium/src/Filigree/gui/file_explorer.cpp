@@ -6,18 +6,9 @@
 #include <vgui/icon.hpp>
 #include <vgui/factory.hpp>
 
-namespace filigree::gui {
-	namespace {
-		auto isImage = [](std::filesystem::path file) {
-			if (std::filesystem::is_directory(file)) {
-				return false;
-			}
-			std::string ext { file.extension().string() };
-			std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-			return ext == ".png" || ext == ".jpg" || ext == ".bmp";
-		};
-	}
+#include "filepath_funcs.hpp"
 
+namespace filigree::gui {
 	FileExplorer::FileExplorer(filigree::EventQueue& evtQueue) {
 		evtQueue_ = &evtQueue;
 		activeDir_ = std::filesystem::current_path();
@@ -109,6 +100,10 @@ namespace filigree::gui {
 			selectedPath_ = {};
 			selectionRect_->setColor(sf::Color::Transparent);
 		}
+
+		if (mouseInput.isPressed(sf::Mouse::Button::Right)) {
+			evtQueue_->add(filigree::Event::CONTEXT_MENU_OPEN);
+		}
 	}
 
 	void FileExplorer::render(ir::render::VertexRenderer& renderer) const {
@@ -120,11 +115,15 @@ namespace filigree::gui {
 		}
 	}
 
+	void FileExplorer::moveTo(std::filesystem::path path) {
+		clearHistoryNext();
+		historyPrev_.push_front(activeDir_);
+		setPath(path);
+	}
+
 	void FileExplorer::moveToParent() {
 		if (activeDir_.has_relative_path()) {
-			clearHistoryNext();
-			historyPrev_.push_front(activeDir_);
-			setPath(activeDir_.parent_path());
+			moveTo(activeDir_.parent_path());
 		}
 	}
 

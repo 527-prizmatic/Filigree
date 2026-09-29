@@ -44,6 +44,10 @@ namespace filigree {
 			bool resizeEnabled() const;
 			int resizeSize() const;
 
+			void setOutputPath(std::filesystem::path path);
+			void setFiligreePath(std::filesystem::path path);
+			void setStampPath(std::filesystem::path path);
+
 			const ProcessorSettings assembleSettings() const;
 
 		private:
@@ -75,9 +79,9 @@ namespace filigree {
 
 			ir::vgui::FramedElement* startProcessingButton_ { nullptr };
 
-			std::filesystem::path pathOutput { std::filesystem::current_path() };
-			std::filesystem::path pathFiligree { "..\\resources\\default_filigree.png" };
-			std::filesystem::path pathStamp { "..\\resources\\default_stamp.png" };
+			std::filesystem::path pathOutput_ { std::filesystem::current_path() };
+			std::filesystem::path pathFiligree_ { "..\\resources\\default_filigree.png" };
+			std::filesystem::path pathStamp_ { "..\\resources\\default_stamp.png" };
 		};
 	}
 }

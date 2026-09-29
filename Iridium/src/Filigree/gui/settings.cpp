@@ -73,17 +73,17 @@ namespace filigree::gui {
 
 		auto labelO { settings_->getChild<ir::vgui::FramedElement>("FieldPaths")->getChild<ir::vgui::Label>("LabelOutput") };
 		if (labelO) {
-			labelO->setLabel("Output path: " + filigree::shortenPath(pathOutput, 1));
+			labelO->setLabel("Output path: " + filigree::shortenPath(pathOutput_, 1));
 		}
 
 		auto labelF { settings_->getChild<ir::vgui::FramedElement>("FieldPaths")->getChild<ir::vgui::Label>("LabelFiligree") };
 		if (labelF) {
-			labelF->setLabel("Filigree path: " + filigree::shortenPath(pathFiligree, 1));
+			labelF->setLabel("Filigree path: " + filigree::shortenPath(pathFiligree_, 1));
 		}
 		
 		auto labelS { settings_->getChild<ir::vgui::FramedElement>("FieldPaths")->getChild<ir::vgui::Label>("LabelStamp") };
 		if (labelS) {
-			labelS->setLabel("Stamp path: " + filigree::shortenPath(pathStamp, 1));
+			labelS->setLabel("Stamp path: " + filigree::shortenPath(pathStamp_, 1));
 		}
 		
 		if (settings_) {
@@ -327,6 +327,18 @@ namespace filigree::gui {
 		return resizeSize_->value();
 	}
 
+	void SettingsUI::setOutputPath(std::filesystem::path path) {
+		pathOutput_ = path;
+	}
+
+	void SettingsUI::setFiligreePath(std::filesystem::path path) {
+		pathFiligree_ = path;
+	}
+	
+	void SettingsUI::setStampPath(std::filesystem::path path) {
+		pathStamp_ = path;
+	}
+	
 	const ProcessorSettings SettingsUI::assembleSettings() const {
 		ProcessorSettings settings;
 
@@ -340,9 +352,9 @@ namespace filigree::gui {
 		settings.applyStampBR = stampBREnabled_->checked();
 		settings.watermarkOpacity = watermarkOpacity_->value() * .01f;
 
-		settings.pathOutput = pathOutput;
-		settings.pathFiligree = pathFiligree;
-		settings.pathStamp = pathStamp;
+		settings.pathOutput = pathOutput_;
+		settings.pathFiligree = pathFiligree_;
+		settings.pathStamp = pathStamp_;
 
 		settings.applyNoise = noiseEnabled_->checked();
 		settings.noiseOpacity = noiseOpacity_->value() * .01f;

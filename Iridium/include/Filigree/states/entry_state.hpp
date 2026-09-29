@@ -12,6 +12,7 @@
 #include "gui/settings.hpp"
 #include "gui/file_queue.hpp"
 #include "gui/image_preview.hpp"
+#include "gui/context_menu.hpp"
 #include "image_processor.hpp"
 
 class EntryState : public ir::StateBase<EntryState> {
@@ -25,6 +26,7 @@ public:
 		settings_ = std::make_unique<filigree::gui::SettingsUI>(evtQueue_);
 		fileQueue_ = std::make_unique<filigree::gui::FileQueue>(evtQueue_);
 		preview_ = std::make_unique<filigree::gui::ImagePreview>(evtQueue_);
+		ctxMenu_ = std::make_unique<filigree::gui::ContextMenu>(evtQueue_);
 
 		processor_ = std::make_unique<filigree::Processor>(evtQueue_, &*preview_);
 
@@ -32,16 +34,21 @@ public:
 	}
 
 	void onReceiveEvent(const sf::Event& event) {
-		if (fileExplorer_) {
-			fileExplorer_->processEvent(event, *context_->mouse);
+		if (ctxMenu_->active()) {
+			ctxMenu_->processEvent(event, *context_->mouse);
 		}
-		
-		if (settings_) {
-			settings_->processEvent(event);
-		}
+		else {
+			if (fileExplorer_) {
+				fileExplorer_->processEvent(event, *context_->mouse);
+			}
+			
+			if (settings_) {
+				settings_->processEvent(event);
+			}
 
-		if (fileQueue_) {
-			fileQueue_->processEvent(event, *context_->mouse);
+			if (fileQueue_) {
+				fileQueue_->processEvent(event, *context_->mouse);
+			}
 		}
 	}
 
@@ -50,16 +57,22 @@ public:
 			titleBar_->update(*context_->mouse);
 		}
 
-		if (fileExplorer_) {
-			fileExplorer_->update(*context_->mouse);
+		
+		if (ctxMenu_->active()) {
+			ctxMenu_->update(*context_->mouse);
 		}
+		else {
+			if (fileExplorer_) {
+				fileExplorer_->update(*context_->mouse);
+			}
 
-		if (settings_) {
-			settings_->update(*context_->mouse);
-		}
+			if (settings_) {
+				settings_->update(*context_->mouse);
+			}
 
-		if (fileQueue_) {
-			fileQueue_->update(*context_->mouse);
+			if (fileQueue_) {
+				fileQueue_->update(*context_->mouse);
+			}
 		}
 
 		if (preview_) {
@@ -90,6 +103,10 @@ public:
 		if (preview_) {
 			preview_->render(*context_->vertexRenderer);
 		}
+
+		if (ctxMenu_->active()) {
+			ctxMenu_->render(*context_->vertexRenderer);
+		}
 	}
 
 	void onEnd() {
@@ -97,6 +114,29 @@ public:
 	}
 
 	void processEvents() {
+		auto queueFileProcessing = [&](std::filesystem::path path) {
+			/// Add if not already present
+			if (std::find(processingQueue_.begin(), processingQueue_.end(), path) == processingQueue_.end()) {
+				processingQueue_.push_back(path);
+			}
+			
+			/// Sort paths alphabetically regardless of case
+			std::sort(processingQueue_.begin(), processingQueue_.end(),
+				[](const std::filesystem::path& a, const std::filesystem::path& b) {
+					std::string aLower { a.filename().string() };
+					std::transform(aLower.begin(), aLower.end(), aLower.begin(), ::tolower);
+					
+					std::string bLower { b.filename().string() };
+					std::transform(bLower.begin(), bLower.end(), bLower.begin(), ::tolower);
+					
+					return aLower < bLower;
+				}
+			);
+			
+			/// Update file queue display
+			fileQueue_->updateFileList();
+		};
+
 		while (!evtQueue_.empty()) {
 			auto evt { evtQueue_.pop() };
 			if (evt.has_value()) {
@@ -127,26 +167,7 @@ public:
 						auto path { fileExplorer_->selectedPath() };
 						
 						if (path.has_value()) {
-							/// Add if not already present
-							if (std::find(processingQueue_.begin(), processingQueue_.end(), *path) == processingQueue_.end()) {
-								processingQueue_.push_back(*path);
-							}
-							
-							/// Sort paths alphabetically regardless of case
-							std::sort(processingQueue_.begin(), processingQueue_.end(),
-								[](const std::filesystem::path& a, const std::filesystem::path& b) {
-									std::string aLower { a.filename().string() };
-									std::transform(aLower.begin(), aLower.end(), aLower.begin(), ::tolower);
-									
-									std::string bLower { b.filename().string() };
-									std::transform(bLower.begin(), bLower.end(), bLower.begin(), ::tolower);
-									
-									return aLower < bLower;
-								}
-							);
-							
-							/// Update file queue display
-							fileQueue_->updateFileList();
+							queueFileProcessing(*path);
 						}
 
 						break;
@@ -190,6 +211,50 @@ public:
 						break;
 					}
 
+					case filigree::Event::CONTEXT_MENU_OPEN: {
+						if (fileExplorer_->selectedPath().has_value()) {
+							ctxMenu_->create(fileExplorer_->selectedPath().value(), context_->mouse->cursorPosition());
+						}
+						break;
+					}
+
+					case filigree::Event::CONTEXT_MENU_CLOSE: {
+						ctxMenu_->close();
+						break;
+					}
+
+					case filigree::Event::CONTEXT_MENU_NAVIGATE: {
+						if (std::filesystem::is_directory(ctxMenu_->path())) {
+							fileExplorer_->setPath(ctxMenu_->path());
+						}
+						ctxMenu_->close();
+						break;
+					}
+
+					case filigree::Event::CONTEXT_MENU_SET_OUTPUT: {
+						settings_->setOutputPath(ctxMenu_->path());
+						ctxMenu_->close();
+						break;
+					}
+
+					case filigree::Event::CONTEXT_MENU_QUEUE_FILE: {
+						queueFileProcessing(ctxMenu_->path());
+						ctxMenu_->close();
+						break;
+					}
+
+					case filigree::Event::CONTEXT_MENU_SET_FILIGREE: {
+						settings_->setFiligreePath(ctxMenu_->path());
+						ctxMenu_->close();
+						break;
+					}
+
+					case filigree::Event::CONTEXT_MENU_SET_STAMP: {
+						settings_->setStampPath(ctxMenu_->path());
+						ctxMenu_->close();
+						break;
+					}
+
 					case filigree::Event::MINIMIZE: {
 						context_->appWindow->minimize();
 						break;
@@ -212,6 +277,7 @@ private:
 	std::unique_ptr<filigree::gui::SettingsUI> settings_;
 	std::unique_ptr<filigree::gui::FileQueue> fileQueue_;
 	std::unique_ptr<filigree::gui::ImagePreview> preview_;
+	std::unique_ptr<filigree::gui::ContextMenu> ctxMenu_;
 
 	std::unique_ptr<filigree::Processor> processor_;
 

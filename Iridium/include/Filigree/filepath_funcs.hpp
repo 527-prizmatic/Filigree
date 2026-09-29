@@ -31,6 +31,15 @@ namespace filigree {
 
 		return shortened;
 	}
+
+	inline bool isImage(std::filesystem::path file) {
+		if (std::filesystem::is_directory(file)) {
+			return false;
+		}
+		std::string ext { file.extension().string() };
+		std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+		return ext == ".png" || ext == ".jpg" || ext == ".bmp";
+	}
 }
 
 #endif // FILIGREE_FILEPATH_FUNCS_HPP_

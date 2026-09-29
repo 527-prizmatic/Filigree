@@ -16,9 +16,10 @@ namespace filigree::gui {
 		void update(ir::input::Mouse& mouseInput);
 		void render(ir::render::VertexRenderer& renderer) const;
 
-		std::filesystem::path activeFolder() const;
-		std::optional<std::filesystem::path> selectedPath() const { return selectedPath_; }
+		[[nodiscard]] std::filesystem::path activeFolder() const { return activeDir_; }
+		[[nodiscard]] std::optional<std::filesystem::path> selectedPath() const { return selectedPath_; }
 
+		void moveTo(std::filesystem::path path);
 		void moveToParent();
 		void moveToHistoryPrev();
 		void moveToHistoryNext();
