@@ -24,13 +24,21 @@ namespace filigree::gui {
 		void prepareTexture(std::filesystem::path path);
 		void deleteTexture();
 
+		void setProgressBarCount(int count);
+		void setProgressBarStatus(int count);
+		void setProgressBarVisibility(bool visible);
+		void incrementProgressBar();
+
 	private:
-		void createUIPreview();
+		void createUIProgressBar();
 		void drawSpinner(ir::render::VertexRenderer& renderer, ir::Vector center);
 
 		filigree::EventQueue* evtQueue_ { nullptr };
 		
 		std::unique_ptr<ir::vgui::FramedElement> preview_ { nullptr };
+		std::unique_ptr<ir::vgui::FramedElement> progressBar_ { nullptr };
+		std::atomic<int> pbStatus_ { 0 };
+		std::atomic<int> pbCount_ { 0 };
 
 		std::unique_ptr<sf::Texture> img_ { nullptr };
 		std::unique_ptr<ir::render::Quad> quad_ { nullptr };

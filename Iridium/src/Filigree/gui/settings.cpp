@@ -126,8 +126,10 @@ namespace filigree::gui {
 				labelCheck->setAnchor(ir::vgui::Label::Anchor::RIGHT);
 
 			auto resize { std::make_unique<ir::vgui::IntField>(1000) };
-			resize->setScale(12.f)
+			resize->setScale(15.f)
 				.setMaxChars(5u)
+				.setColorUnfocused(sf::Color { 16u, 32u, 0u })
+				.setColorFocused(sf::Color { 48u, 96u, 0u })
 				.setPosition(ir::Vector { 2.f, 32.f })
 				.setSize(ir::Vector { 96.f, 26.f });
 				

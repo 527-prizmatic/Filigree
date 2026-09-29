@@ -16,6 +16,7 @@ namespace filigree {
 	void Processor::process(std::vector<std::filesystem::path> images) {
 		for (auto& img : images) {
 			process(img);
+			preview_->incrementProgressBar();
 		}
 		preview_->deleteTexture();
 	}
