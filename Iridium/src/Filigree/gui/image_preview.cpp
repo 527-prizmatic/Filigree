@@ -1,6 +1,7 @@
 #include "gui/image_preview.hpp"
 
 #include <time.hpp>
+#include <vgui/label.hpp>
 
 namespace filigree::gui {
 	ImagePreview::ImagePreview(filigree::EventQueue& evtQueue) {
@@ -14,8 +15,7 @@ namespace filigree::gui {
 			preview_->setColors(sf::Color::White, sf::Color { 16u, 8u, 0u })
 				.setSize(ir::Vector { 400.f, 300.f })
 				.setPosition(ir::Vector { 880.f, 30.f });
-
-			createUIPreview();
+			createUIProgressBar();
 		}
 
 	}
@@ -35,6 +35,16 @@ namespace filigree::gui {
 			setTexture(texPath_.value());
 			texPath_.reset();
 		}
+
+		if (progressBar_ && progressBar_->enabled()) {
+			progressBar_->update(mouseInput);
+			std::lock_guard<std::mutex> lock { mutex_ };
+			auto fill { progressBar_->getChild("Fill") };
+			fill->setSize(ir::Vector { 300.f * static_cast<float>(pbStatus_) / static_cast<float>(pbCount_), 20.f });
+
+			auto label { progressBar_->getChild<ir::vgui::Label>("Label") };
+			label->setLabel(std::to_string(pbStatus_) + " / " + std::to_string(pbCount_));
+		}
 	}
 
 	void ImagePreview::render(ir::render::VertexRenderer& renderer) {
@@ -53,6 +63,10 @@ namespace filigree::gui {
 				drawSpinner(renderer, center);
 			}
 		}
+
+		if (progressBar_ && progressBar_->enabled()) {
+			progressBar_->render(renderer);
+		}
 	}
 
 	
@@ -62,6 +76,28 @@ namespace filigree::gui {
 
 	void ImagePreview::deleteTexture() {
 		shouldDelete_ = true;
+	}
+
+	void ImagePreview::setProgressBarCount(int count) {
+		std::lock_guard<std::mutex> lock { mutex_ };
+		pbCount_ = count;
+	}
+
+	void ImagePreview::setProgressBarStatus(int count) {
+		std::lock_guard<std::mutex> lock { mutex_ };
+		pbStatus_ = count;
+	}
+	
+	void ImagePreview::setProgressBarVisibility(bool visible) {
+		if (progressBar_) {
+			std::lock_guard<std::mutex> lock { mutex_ };
+			progressBar_->setEnabled(visible);
+		}
+	}
+	
+	void ImagePreview::incrementProgressBar() {
+		std::lock_guard<std::mutex> lock { mutex_ };
+		pbStatus_++;
 	}
 
 	void ImagePreview::setTexture(std::filesystem::path tex) {
@@ -92,8 +128,22 @@ namespace filigree::gui {
 		}
 	}
 	
-	void ImagePreview::createUIPreview() {
+	void ImagePreview::createUIProgressBar() {
+		progressBar_ = std::make_unique<ir::vgui::FramedElement>();
+		progressBar_->setPosition(preview_->position() + ir::Vector { 50.f, 270.f })
+			.setSize(ir::Vector { 300.f, 20.f })
+			.setColors(sf::Color::White, sf::Color { 0u, 0u, 0u, 128u });
 		
+		auto label { progressBar_->addChildElement<ir::vgui::Label>("Label", "0 / 0") };
+		label->setAnchor(ir::vgui::Label::Anchor::OVER)
+			.setScale(12.f);
+		
+		auto progress { progressBar_->addChildElement<ir::vgui::FramedElement>("Fill") };
+		progress->setPosition(ir::Vector { 0.f, 0.f })
+			.setSize(ir::Vector { 0.f, 20.f })
+			.setColors(sf::Color::White, sf::Color { 255u, 170u, 85u });
+		
+		progressBar_->setEnabled(false);
 	}
 
 	void ImagePreview::updateSpinnerAngle(float dt) {

@@ -183,6 +183,9 @@ public:
 							auto sentQueue { processingQueue_ };
 							std::jthread thr([&, sentQueue]() {
 								evtQueue_.setOpen(false);
+								preview_->setProgressBarVisibility(true);
+								preview_->setProgressBarCount(sentQueue.size());
+								preview_->setProgressBarStatus(0);
 								try {
 									processor_->loadSettings(settings_->assembleSettings());
 									processor_->process(sentQueue);
@@ -191,6 +194,7 @@ public:
 									LOG_ERROR("Unspecified error during image processing");
 								}
 								evtQueue_.setOpen(true);
+								preview_->setProgressBarVisibility(false);
 							});
 
 							thr.detach();
