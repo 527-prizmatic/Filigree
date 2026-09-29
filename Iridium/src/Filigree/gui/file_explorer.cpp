@@ -163,11 +163,6 @@ namespace filigree::gui {
 		listOffset_ = 0;
 		populateFileList();
 		updateFileList();
-		
-		LOG_INFO("prev");
-		std::for_each(historyPrev_.begin(), historyPrev_.end(), [&](std::filesystem::path& p) { LOG_INFO(p.string()); });
-		LOG_INFO("next");
-		std::for_each(historyNext_.begin(), historyNext_.end(), [&](std::filesystem::path& p) { LOG_INFO(p.string()); });
 	}
 
 	void FileExplorer::processFileSelection() {
