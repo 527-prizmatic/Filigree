@@ -98,39 +98,30 @@ namespace filigree::gui {
 	}
 
 	void FileQueue::createUITitle() {
-		auto field { std::make_unique<ir::vgui::FramedElement>() };
+		auto field { fileQueue_->addChildElement<ir::vgui::FramedElement>("FieldTitle") };
 		field->setSize(ir::Vector { 400.f, 30.f })
 			.setPosition(ir::Vector { 0.f, 0.f })
 			.setColors(sf::Color::White, sf::Color::Transparent);
 
-			auto labelTitle { std::make_unique<ir::vgui::Label>("Processing queue") };
-			labelTitle->setPosition(ir::Vector { 6.f, 6.f });
-			
-			field->setChildElement("LabelTitle", std::move(labelTitle));
-
-			auto buttonClear { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "trash", sf::Color(224u, 64u, 128u)) };
-			buttonClear->setPosition(ir::Vector { 372.f, 2.f })
-				.registerClickEvent([&]() { evtQueue_->add(filigree::Event::CLEAR_QUEUE); });
-			
-			field->setChildElement("ButtonClear", std::move(buttonClear));
-
-		fileQueue_->setChildElement("FieldTitle", std::move(field));
+		auto labelTitle { field->addChildElement<ir::vgui::Label>("Processing queue") };
+		labelTitle->setPosition(ir::Vector { 6.f, 6.f });
+		
+		auto buttonClear { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "trash", sf::Color(224u, 64u, 128u)) };
+		buttonClear->setPosition(ir::Vector { 372.f, 2.f })
+			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::CLEAR_QUEUE); });
+		field->setChildElement("ButtonClear", std::move(buttonClear));
 	}
 
 	void FileQueue::createUIFileList() {
 		for (size_t i = 0; i < 18; i++) {
-			auto el { std::make_unique<ir::vgui::FramedElement>() };
+			auto el { fileQueue_->addChildElement<ir::vgui::FramedElement>(std::string { "Field" } + std::to_string(i)) };
 			el->setPosition(ir::Vector { 0.f, 30.f + static_cast<float>(i) * 20.f })
 				.setSize(ir::Vector { 400.f, 20.f })
 				.setColors(sf::Color { 255u, 0u, 128u, 32u }, i % 2 ? sf::Color { 255u, 255u, 255u, 8u } : sf::Color::Transparent);
 
-				auto label { std::make_unique<ir::vgui::Label>("") };
-				label->setScale(12.f)
-					.setPosition(ir::Vector { 3.f, 1.f });
-
-				el->setChildElement("Label", std::move(label));
-
-			fileQueue_->setChildElement(std::string { "Field" } + std::to_string(i), std::move(el));
+			auto label { el->addChildElement<ir::vgui::Label>("Label", "") };
+			label->setScale(12.f)
+				.setPosition(ir::Vector { 3.f, 1.f });
 		}
 	}
 

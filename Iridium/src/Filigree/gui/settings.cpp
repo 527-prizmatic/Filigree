@@ -3,6 +3,7 @@
 #include <vgui/element.hpp>
 #include <vgui/label.hpp>
 #include <vgui/icon.hpp>
+#include <vgui/factory.hpp>
 
 #include <rendering/model_renderer.hpp>
 #include <rendering/text.hpp>
@@ -149,82 +150,45 @@ namespace filigree::gui {
 	}
 
 	void SettingsUI::createUIWatermark(float yPos) {
-		auto field { std::make_unique<ir::vgui::FramedElement>() };
+		/// Root
+		auto field { settings_->addChildElement<ir::vgui::FramedElement>("FieldWatermark") };
 		field->setSize(ir::Vector { 399.f, 150.f })
 			.setPosition(ir::Vector { 0.f, yPos })
 			.setColors(sf::Color::White, sf::Color::Transparent);
 
-			auto checkF { std::make_unique<ir::vgui::Checkbox>() };
-			checkF->setChecked(true)
-				.setPosition(ir::Vector { 3.f, 3.f });
-				
-				auto labelF { std::make_unique<ir::vgui::Label>("Apply filigree") };
-				labelF->setAnchor(ir::vgui::Label::Anchor::RIGHT);
+		/// Checkbox to enable filigree
+		filigreeEnabled_ = field->addChildElement<ir::vgui::Checkbox>("CheckboxF");
+		filigreeEnabled_->setChecked(true)
+			.setPosition(ir::Vector { 3.f, 3.f });
+		ir::vgui::addLabel(filigreeEnabled_, "Apply filigree", ir::vgui::Label::Anchor::RIGHT);
 
-				checkF->setChildElement("Label", std::move(labelF));
-			field->setChildElement("CheckF", std::move(checkF));
+		/// Stamps section label
+		auto labelS { field->addChildElement<ir::vgui::Label>("LabelS", "Apply stamps:") };
+		labelS->setPosition(ir::Vector { 5.f, 34.f });
+		
+		/// Stamps checkboxes
+		stampTLEnabled_ = field->addChildElement<ir::vgui::Checkbox>("CheckboxTL");
+		stampTLEnabled_->setPosition(ir::Vector { 3.f, 63.f });
+		ir::vgui::addLabel(stampTLEnabled_, "Top left", ir::vgui::Label::Anchor::RIGHT);
 
-			auto labelS { std::make_unique<ir::vgui::Label>("Apply stamps:") };
-			labelS->setPosition(ir::Vector { 5.f, 34.f });
-			field->setChildElement("LabelS", std::move(labelS));
+		stampTREnabled_ = field->addChildElement<ir::vgui::Checkbox>("CheckboxTR");
+		stampTREnabled_->setPosition(ir::Vector { 372.f, 63.f });
+		ir::vgui::addLabel(stampTREnabled_, "Top right", ir::vgui::Label::Anchor::LEFT);
 
-			auto checkTL { std::make_unique<ir::vgui::Checkbox>() };
-			checkTL->setPosition(ir::Vector { 3.f, 63.f });
-				
-				auto labelTL { std::make_unique<ir::vgui::Label>("Top left") };
-				labelTL->setAnchor(ir::vgui::Label::Anchor::RIGHT);
+		stampBLEnabled_ = field->addChildElement<ir::vgui::Checkbox>("CheckboxBL");
+		stampBLEnabled_->setPosition(ir::Vector { 3.f, 63.f });
+		ir::vgui::addLabel(stampBLEnabled_, "Bottom left", ir::vgui::Label::Anchor::RIGHT);
 
-				checkTL->setChildElement("Label", std::move(labelTL));
-			field->setChildElement("CheckTL", std::move(checkTL));
+		stampBREnabled_ = field->addChildElement<ir::vgui::Checkbox>("CheckboxBR");
+		stampBREnabled_->setPosition(ir::Vector { 372.f, 63.f });
+		ir::vgui::addLabel(stampBREnabled_, "Bottom right", ir::vgui::Label::Anchor::LEFT);
 
-			auto checkTR { std::make_unique<ir::vgui::Checkbox>() };
-			checkTR->setPosition(ir::Vector { 372.f, 63.f });
-				
-				auto labelTR { std::make_unique<ir::vgui::Label>("Top right") };
-				labelTR->setAnchor(ir::vgui::Label::Anchor::LEFT);
-
-				checkTR->setChildElement("Label", std::move(labelTR));
-			field->setChildElement("CheckTR", std::move(checkTR));
-
-			auto checkBL { std::make_unique<ir::vgui::Checkbox>() };
-			checkBL->setPosition(ir::Vector { 3.f, 93.f });
-				
-				auto labelBL { std::make_unique<ir::vgui::Label>("Bottom left") };
-				labelBL->setAnchor(ir::vgui::Label::Anchor::RIGHT);
-
-				checkBL->setChildElement("Label", std::move(labelBL));
-			field->setChildElement("CheckBL", std::move(checkBL));
-
-			auto checkBR { std::make_unique<ir::vgui::Checkbox>() };
-			checkBR->setChecked(true)
-				.setPosition(ir::Vector { 372.f, 93.f });
-				
-				auto labelBR { std::make_unique<ir::vgui::Label>("Bottom right") };
-				labelBR->setAnchor(ir::vgui::Label::Anchor::LEFT);
-
-				checkBR->setChildElement("Label", std::move(labelBR));
-			field->setChildElement("CheckBR", std::move(checkBR));
-
-			auto labelO { std::make_unique<ir::vgui::Label>("Opacity:") };
-			labelO->setPosition(ir::Vector { 5.f, 124.f });
-			field->setChildElement("LabelO", std::move(labelO));
-
-			auto sliderOpacity { std::make_unique<ir::vgui::Slider>(0, 100) };
-			sliderOpacity->setValue(20)
-				.setPosition(ir::Vector { 133.f, 123.f })
-				.setSize(ir::Vector { 254.f, 24.f })
-				.setColors(sf::Color::White, sf::Color { 96u, 192u, 0u });
-
-			field->setChildElement("SliderOpacity", std::move(sliderOpacity));
-
-		settings_->setChildElement("FieldWatermark", std::move(field));
-
-		filigreeEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckF");
-		stampTLEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckTL");
-		stampTREnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckTR");
-		stampBLEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckBL");
-		stampBREnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Checkbox>("CheckBR");
-		watermarkOpacity_ = settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Slider>("SliderOpacity");
+		/// Opacity slider
+		watermarkOpacity_ = field->addChildElement<ir::vgui::Slider>("SliderOpacity", 0, 100);
+		watermarkOpacity_->setValue(20)
+			.setPosition(ir::Vector { 133.f, 123.f })
+			.setSize(ir::Vector { 254.f, 24.f })
+			.setColors(sf::Color::White, sf::Color { 96u, 192u, 0u });
 	}
 
 	void SettingsUI::createUINoise(float yPos) {

@@ -229,20 +229,21 @@ namespace filigree::gui {
 	}
 
 	void FileExplorer::createPathBar() {
-		auto bar { std::make_unique<ir::vgui::FramedElement>() };
+		/// Parent element
+		auto bar { fileExplorer_->addChildElement<ir::vgui::FramedElement>("PathBar") };
 		bar->setColors(sf::Color::White, sf::Color::Transparent)
 			.setPosition(ir::Vector { 0.f, 0.f })
 			.setSize(ir::Vector { 480.f, 30.f });
+
+		/// Window title
+		auto labelPath { fileExplorer_->addChildElement<ir::vgui::Label>("LabelPath", concisePath(activeDir_)) };
+		labelPath->setPosition(ir::Vector { 6.f, 6.f });
 		
-		auto pathLabel { std::make_unique<ir::vgui::Label>(concisePath(activeDir_)) };
-		pathLabel->setPosition(ir::Vector { 6.f, 6.f });
-		
-		/// TO BE IMPLEMENTED LATER
+		/// Navigation buttons (still use the old nesting system for now, due to makeIconButton limitations)
 		auto buttonPrev { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "arrow_left", sf::Color(128u, 128u, 128u)) };
 		buttonPrev->setPosition(ir::Vector { 396.f, 2.f })
 			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::HISTORY_PREV); });
 
-		/// TO BE IMPLEMENTED LATER
 		auto buttonNext { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "arrow_right", sf::Color(128u, 128u, 128u)) };
 		buttonNext->setPosition(ir::Vector { 424.f, 2.f })
 			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::HISTORY_NEXT); });
@@ -251,12 +252,9 @@ namespace filigree::gui {
 		buttonParent->setPosition(ir::Vector { 452.f, 2.f })
 			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::MOVE_TO_PARENT_FOLDER); });
 		
-		bar->setChildElement("PathLabel", std::move(pathLabel));
 		bar->setChildElement("ButtonPrev", std::move(buttonPrev));
 		bar->setChildElement("ButtonNext", std::move(buttonNext));
 		bar->setChildElement("ButtonParent", std::move(buttonParent));
-
-		fileExplorer_->setChildElement("PathBar", std::move(bar));
 	}
 
 	void FileExplorer::createFileFields() {

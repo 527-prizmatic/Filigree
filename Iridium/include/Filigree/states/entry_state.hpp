@@ -18,6 +18,8 @@
 class EntryState : public ir::StateBase<EntryState> {
 public:
 	void onInitialize() {
+		context_->appWindow->setTitle("Filigree -- Image Watermarker");
+
 		ir::vgui::Checkbox::setDefaultSize(ir::Vector { 24.f, 24.f });
 		ir::vgui::Label::setDefaultScale(15.f);
 

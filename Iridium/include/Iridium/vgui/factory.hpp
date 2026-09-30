@@ -21,6 +21,12 @@ namespace ir::vgui {
 		button->setChildElement("Icon", std::move(icon));
 		return button;
 	}
+
+	inline ir::vgui::Label* addLabel(ir::vgui::Element* parent, std::string label, ir::vgui::Label::Anchor anchor) {
+		auto l { parent->addChildElement<ir::vgui::Label>("Label", label) };
+		l->setAnchor(anchor);
+		return l;
+	}
 }
 
 #endif // IRIDIUM_VGUI_FACTORY_HPP_

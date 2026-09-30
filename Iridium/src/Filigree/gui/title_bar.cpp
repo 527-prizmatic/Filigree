@@ -3,6 +3,7 @@
 #include <vgui/element.hpp>
 #include <vgui/label.hpp>
 #include <vgui/icon.hpp>
+#include <vgui/factory.hpp>
 
 #include <rendering/model_renderer.hpp>
 #include <rendering/text.hpp>
@@ -39,43 +40,24 @@ namespace filigree::gui {
 	}
 	
 	void TitleBar::createMinimizeButton() {
-		auto buttonMinimize { std::make_unique<ir::vgui::FramedElement>() };
-		buttonMinimize->setPosition(ir::Vector { 1223.f, 2.f })
-			.setSize(ir::Vector { 26.f, 26.f })
-			.setColors(sf::Color(32u, 224u, 192u, 255u), sf::Color(32u, 224u, 192u, 32u))
+		auto button { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "tools\\line", sf::Color(32u, 224u, 192u)) };
+		button->setPosition(ir::Vector { 1223.f, 2.f })
 			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::MINIMIZE); });
-
-		auto icon { std::make_unique<ir::vgui::Icon>("tools\\line") };
-		icon->setScale(22.f)
-			.setFrameColor(sf::Color(32u, 224u, 192u, 255u))
-			.setPosition(ir::Vector { 2.f, 19.f });
-
-		buttonMinimize->setChildElement("Icon", std::move(icon));
-		titleBar_->setChildElement("ButtonMinimize", std::move(buttonMinimize));
+		button->getChild("Icon")->setPosition(ir::Vector { 2.f, 19.f });
+		titleBar_->setChildElement("ButtonMinimize", std::move(button));
 	}
 
 	void TitleBar::createExitButton() {
-		auto buttonExit { std::make_unique<ir::vgui::FramedElement>() };
-		buttonExit->setPosition(ir::Vector { 1251.f, 2.f })
-			.setSize(ir::Vector { 26.f, 26.f })
-			.setColors(sf::Color(224u, 48u, 92u, 255u), sf::Color(224u, 48u, 92u, 32u))
+		auto button { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "tools\\cross", sf::Color(224u, 48u, 92u)) };
+		button->setPosition(ir::Vector { 1251.f, 2.f })
 			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::EXIT); });
-
-		auto icon { std::make_unique<ir::vgui::Icon>("tools\\cross") };
-		icon->setScale(21.f)
-			.setFrameColor(sf::Color(224u, 48u, 92u, 255u))
-			.setPosition(ir::Vector { 2.f, 2.f });
-
-		buttonExit->setChildElement("Icon", std::move(icon));
-		titleBar_->setChildElement("ButtonExit", std::move(buttonExit));
+		titleBar_->setChildElement("ButtonExit", std::move(button));
 	}
 
 	void TitleBar::createTitle() {
-		auto title { std::make_unique<ir::vgui::Label>() };
-		title->setScale(18.f);
-		title->setAnchor(ir::vgui::Label::Anchor::OVER);
-		title->setLabel("Filigree --- Image Watermarker");
-		title->setColor(sf::Color { 192u, 128u, 255u });
-		titleBar_->setChildElement("Title", std::move(title));
+		auto title { titleBar_->addChildElement<ir::vgui::Label>("Title", "Filigree --- Image Watermarker") };
+		title->setScale(18.f)
+			.setAnchor(ir::vgui::Label::Anchor::OVER)
+			.setColor(sf::Color { 192u, 128u, 255u });
 	}
 }
