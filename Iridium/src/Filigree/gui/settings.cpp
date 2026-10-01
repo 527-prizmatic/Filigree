@@ -168,6 +168,10 @@ namespace filigree::gui {
 			.setPosition(ir::Vector { 133.f, 123.f })
 			.setSize(ir::Vector { 254.f, 24.f })
 			.setColors(sf::Color::White, sf::Color { 96u, 192u, 0u });
+
+		/// Opacity slider label
+		auto labelO { field->addChildElement<ir::vgui::Label>("LabelO", "Opacity:") };
+		labelO->setPosition(ir::Vector { 5.f, 124.f });
 	}
 
 	void SettingsUI::createUINoise(float yPos) {
