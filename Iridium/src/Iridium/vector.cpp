@@ -27,7 +27,8 @@ namespace ir {
 	}
 
 	bool Vector::isZero() const {
-		return false;
+		return abs(x) <= std::numeric_limits<float>::epsilon()
+			&& abs(y) <= std::numeric_limits<float>::epsilon();
 	}
 
 	ir::Vector Vector::polar(float radius, float angle) {
@@ -126,5 +127,9 @@ namespace ir {
 	
 	ir::Vector Vector::negate() const {
 		return ir::Vector{ -x, -y };
+	}
+
+	float Vector::dot(const ir::Vector a, const ir::Vector b) {
+		return a.x * b.x + a.y * b.y;
 	}
 }

@@ -154,6 +154,9 @@ namespace ir {
 
 		static const ir::Vector kZero;
 		static const ir::Vector kUnit;
+
+		/// @return Vector dot product
+		[[nodiscard]] static float dot(const ir::Vector a, const ir::Vector b);
 	};
 }
 

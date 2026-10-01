@@ -158,12 +158,9 @@ namespace filigree::gui {
 			ir::Vector offset2 { ir::Vector { 100.f, 0.f }.rotate(spinnerAngle_ + angle * (static_cast<float>(i) + .5f)) };
 			ir::Vector offset3 { ir::Vector { 100.f, 0.f }.rotate(spinnerAngle_ + angle * static_cast<float>(i + 1)) };
 
-			/// Create a dot function / operator asap
-			auto dot { [](ir::Vector a, ir::Vector b) { return a.x * b.x + a.y * b.y; } };
-
 			ir::Vector direction { ir::Vector::polar(100.f, ir::math::tau * -.125f) };
-			float maxDot { dot(direction, direction) };
-			float dotSide { dot(direction, offset2) };
+			float maxDot { direction.magnitudeSquare() };
+			float dotSide { ir::Vector::dot(direction, offset2) };
 			sf::Color clr { 255u, 255u, 255u, 0u };
 			clr.a = 32.f * std::abs(ir::math::powi(dotSide / maxDot, 3));
 

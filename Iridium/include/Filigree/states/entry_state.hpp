@@ -7,6 +7,7 @@
 #include <vgui/label.hpp>
 
 #include "events.hpp"
+#include "gui/mouse_cursor.hpp"
 #include "gui/title_bar.hpp"
 #include "gui/file_explorer.hpp"
 #include "gui/settings.hpp"
@@ -19,6 +20,10 @@ class EntryState : public ir::StateBase<EntryState> {
 public:
 	void onInitialize() {
 		context_->appWindow->setTitle("Filigree -- Image Watermarker");
+
+		context_->appWindow->enableMouseCursor(false);
+		mouseCursor_ = std::make_unique<filigree::gui::MouseCursor>();
+		mouseCursor_->base();
 
 		ir::vgui::Checkbox::setDefaultSize(ir::Vector { 24.f, 24.f });
 		ir::vgui::Label::setDefaultScale(15.f);
@@ -83,6 +88,12 @@ public:
 		}
 
 		processEvents();
+		if (mouseCursor_) {
+			mouseCursor_->update(context_->mouse->cursorPosition(), context_->deltaTime());
+			if (context_->mouse->isPressed(sf::Mouse::Button::Left)) {
+				mouseCursor_->onClick();
+			}
+		}
 	}
 
 	void onRender() {
@@ -108,6 +119,10 @@ public:
 
 		if (ctxMenu_->active()) {
 			ctxMenu_->render(*context_->vertexRenderer);
+		}
+		
+		if (mouseCursor_) {
+			mouseCursor_->render(*context_->vertexRenderer);
 		}
 	}
 
@@ -185,6 +200,7 @@ public:
 							auto sentQueue { processingQueue_ };
 							std::jthread thr([&, sentQueue]() {
 								evtQueue_.setOpen(false);
+								mouseCursor_->loading();
 								preview_->setProgressBarVisibility(true);
 								preview_->setProgressBarCount(sentQueue.size());
 								preview_->setProgressBarStatus(0);
@@ -197,6 +213,7 @@ public:
 								}
 								evtQueue_.setOpen(true);
 								preview_->setProgressBarVisibility(false);
+								mouseCursor_->base();
 							});
 
 							thr.detach();
@@ -277,6 +294,8 @@ public:
 
 private:
 	filigree::EventQueue evtQueue_;
+
+	std::unique_ptr<filigree::gui::MouseCursor> mouseCursor_;
 
 	std::unique_ptr<filigree::gui::TitleBar> titleBar_;
 	std::unique_ptr<filigree::gui::FileExplorer> fileExplorer_;
