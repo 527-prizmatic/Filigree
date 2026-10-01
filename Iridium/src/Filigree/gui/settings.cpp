@@ -74,7 +74,7 @@ namespace filigree::gui {
 
 		auto labelO { settings_->getChild<ir::vgui::Label>("FieldPaths", "LabelOutput") };
 		if (labelO) {
-			labelO->setLabel("Output path: " + filigree::shortenPath(pathOutput_, 1));
+			labelO->setLabel("Output path: " + filigree::shortenPath(pathOutput_, 2));
 		}
 
 		auto labelF { settings_->getChild<ir::vgui::Label>("FieldPaths", "LabelFiligree") };

@@ -79,7 +79,7 @@ namespace filigree {
 
 			ir::vgui::FramedElement* startProcessingButton_ { nullptr };
 
-			std::filesystem::path pathOutput_ { std::filesystem::current_path() };
+			std::filesystem::path pathOutput_ { std::filesystem::current_path().parent_path().append("out\\") };
 			std::filesystem::path pathFiligree_ { "..\\resources\\default_filigree.png" };
 			std::filesystem::path pathStamp_ { "..\\resources\\default_stamp.png" };
 		};
