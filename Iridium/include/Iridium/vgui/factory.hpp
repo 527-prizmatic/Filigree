@@ -22,6 +22,16 @@ namespace ir::vgui {
 		return button;
 	}
 
+	inline ir::vgui::FramedElement* addIconButton(ir::vgui::Element* parent, std::string name, ir::Vector size, std::string path, sf::Color clr) {
+		auto button { makeIconButton(size, path, clr) };
+		parent->setChildElement(name, std::move(button));
+
+		auto ret { parent->getChild<ir::vgui::FramedElement>(name) };
+		ret->registerHoverEvent([ret, clr](){ ret->setBackgroundColor(sf::Color(clr.r, clr.g, clr.b, 128u)); })
+			.registerIdleEvent([ret, clr](){ ret->setBackgroundColor(sf::Color(clr.r, clr.g, clr.b, 32u)); });
+		return ret;
+	}
+
 	inline ir::vgui::Label* addLabel(ir::vgui::Element* parent, std::string label, ir::vgui::Label::Anchor anchor) {
 		auto l { parent->addChildElement<ir::vgui::Label>("Label", label) };
 		l->setAnchor(anchor);

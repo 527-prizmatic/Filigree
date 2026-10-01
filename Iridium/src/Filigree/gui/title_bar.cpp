@@ -40,18 +40,16 @@ namespace filigree::gui {
 	}
 	
 	void TitleBar::createMinimizeButton() {
-		auto button { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "tools\\line", sf::Color(32u, 224u, 192u)) };
+		auto button { ir::vgui::addIconButton(&*titleBar_, "ButtonMinimize", ir::Vector { 26.f, 26.f }, "tools\\line", sf::Color(32u, 224u, 192u)) };
 		button->setPosition(ir::Vector { 1223.f, 2.f })
 			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::MINIMIZE); });
 		button->getChild("Icon")->setPosition(ir::Vector { 2.f, 19.f });
-		titleBar_->setChildElement("ButtonMinimize", std::move(button));
 	}
 
 	void TitleBar::createExitButton() {
-		auto button { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "tools\\cross", sf::Color(224u, 48u, 92u)) };
+		auto button { addIconButton(&*titleBar_, "ButtonExit", ir::Vector { 26.f, 26.f }, "tools\\cross", sf::Color(224u, 48u, 92u)) };
 		button->setPosition(ir::Vector { 1251.f, 2.f })
 			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::EXIT); });
-		titleBar_->setChildElement("ButtonExit", std::move(button));
 	}
 
 	void TitleBar::createTitle() {

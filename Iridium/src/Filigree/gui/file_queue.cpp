@@ -105,11 +105,10 @@ namespace filigree::gui {
 
 		auto labelTitle { field->addChildElement<ir::vgui::Label>("Label", "Processing queue") };
 		labelTitle->setPosition(ir::Vector { 6.f, 6.f });
-		
-		auto buttonClear { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "trash", sf::Color(224u, 64u, 128u)) };
+
+		auto buttonClear { ir::vgui::addIconButton(field, "ButtonClear", ir::Vector { 26.f, 26.f }, "trash", sf::Color(224u, 64u, 128u)) };
 		buttonClear->setPosition(ir::Vector { 372.f, 2.f })
 			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::CLEAR_QUEUE); });
-		field->setChildElement("ButtonClear", std::move(buttonClear));
 	}
 
 	void FileQueue::createUIFileList() {
