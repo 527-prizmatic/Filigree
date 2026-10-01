@@ -45,6 +45,12 @@ namespace filigree::gui {
 		ctxMenu_->setPosition(pos);
 	}
 	
+	void ContextMenu::createParent(std::filesystem::path path, ir::Vector pos) {
+		currentPath_ = path;
+		createUIParent();
+		ctxMenu_->setPosition(pos);
+	}
+	
 	void ContextMenu::close() {
 		ctxMenu_.reset();
 	}
@@ -82,13 +88,16 @@ namespace filigree::gui {
 	}
 
 	void ContextMenu::createUIDir() {
-		createUITitle(2, sf::Color { 128u, 255u, 192u });
+		createUITitle(3, sf::Color { 128u, 255u, 192u });
 
 		auto nav { ctxMenu_->addChildElement<ir::vgui::FramedElement>("FieldNav") };
 		setupButton(nav, 35.f, filigree::Event::CONTEXT_MENU_NAVIGATE, "Open");
 
+		auto scan { ctxMenu_->addChildElement<ir::vgui::FramedElement>("FieldScan") };
+		setupButton(scan, 65.f, filigree::Event::CONTEXT_MENU_SCAN_FOLDER, "Add contents to queue");
+
 		auto setOutput { ctxMenu_->addChildElement<ir::vgui::FramedElement>("FieldOut") };
-		setupButton(setOutput, 65.f, filigree::Event::CONTEXT_MENU_SET_OUTPUT, "Set as output folder");
+		setupButton(setOutput, 95.f, filigree::Event::CONTEXT_MENU_SET_OUTPUT, "Set as output folder");
 	}
 
 	void ContextMenu::createUIImg() {
@@ -109,5 +118,15 @@ namespace filigree::gui {
 
 		auto none { ctxMenu_->addChildElement<ir::vgui::FramedElement>("FieldClose") };
 		setupButton(none, 35.f, filigree::Event::CONTEXT_MENU_CLOSE, "No actions available");
+	}
+
+	void ContextMenu::createUIParent() {
+		createUITitle(2, sf::Color { 192u, 192u, 192u });
+
+		auto setOutput { ctxMenu_->addChildElement<ir::vgui::FramedElement>("FieldOut") };
+		setupButton(setOutput, 35.f, filigree::Event::CONTEXT_MENU_SET_OUTPUT, "Set as output folder");
+
+		auto scan { ctxMenu_->addChildElement<ir::vgui::FramedElement>("FieldScan") };
+		setupButton(scan, 65.f, filigree::Event::CONTEXT_MENU_SCAN_FOLDER, "Add contents to queue");
 	}
 }

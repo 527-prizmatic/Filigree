@@ -238,6 +238,9 @@ public:
 						if (fileExplorer_->selectedPath().has_value()) {
 							ctxMenu_->create(fileExplorer_->selectedPath().value(), context_->mouse->cursorPosition());
 						}
+						else {
+							ctxMenu_->createParent(fileExplorer_->activeFolder(), context_->mouse->cursorPosition());
+						}
 						break;
 					}
 
@@ -249,6 +252,18 @@ public:
 					case filigree::Event::CONTEXT_MENU_NAVIGATE: {
 						if (std::filesystem::is_directory(ctxMenu_->path())) {
 							fileExplorer_->setPath(ctxMenu_->path());
+						}
+						ctxMenu_->close();
+						break;
+					}
+
+					case filigree::Event::CONTEXT_MENU_SCAN_FOLDER: {
+						if (std::filesystem::is_directory(ctxMenu_->path())) {
+							for (auto file : std::filesystem::directory_iterator(ctxMenu_->path())) {
+								if (filigree::isImage(file)) {
+									queueFileProcessing(file);
+								}
+							}
 						}
 						ctxMenu_->close();
 						break;

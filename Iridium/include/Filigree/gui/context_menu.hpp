@@ -23,6 +23,7 @@ namespace filigree::gui {
 		void render(ir::render::VertexRenderer& renderer) const;
 
 		void create(std::filesystem::path path, ir::Vector pos);
+		void createParent(std::filesystem::path path, ir::Vector pos);
 		void close();
 
 		[[nodiscard]] bool active() const { return ctxMenu_ != nullptr; }
@@ -33,6 +34,7 @@ namespace filigree::gui {
 		void createUIDir();
 		void createUIImg();
 		void createUIOther();
+		void createUIParent();
 
 		ir::vgui::Element* setupButton(ir::vgui::Element* el, float posY, filigree::Event evt, std::string label);
 		
