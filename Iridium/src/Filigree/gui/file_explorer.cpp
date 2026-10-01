@@ -207,7 +207,7 @@ namespace filigree::gui {
 
 	void FileExplorer::updateFileList() {
 		for (size_t i = 0; i < 22; i++) { /// 690 px / 30 px per field
-			auto field { fileExplorer_->getChild(std::string { "Field" } + std::to_string(i))->getChild<ir::vgui::Label>("Label") };
+			auto field { fileExplorer_->getChild<ir::vgui::Label>(std::string { "Field" } + std::to_string(i), "Label") };
 			if (i + listOffset_ < pathList_.size()) {
 				auto path { pathList_[i + listOffset_] };
 				field->setLabel(path.filename().string());

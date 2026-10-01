@@ -48,6 +48,21 @@ namespace ir {
 			/// @tparam T Which type the child element should be cast to. If omitted, it will simply return a ir::vgui::Element.
 			[[nodiscard]] Element* getChild(std::string key) const;
 		
+			/// @brief Attempts to climb up the element hierarchy along the given path.
+			/// If at any point a match is not found, the function returns a null pointer.
+			template <typename... Args>
+			[[nodiscard]] Element* getChild(std::string key, Args... args) const {
+				return getChild(key)->getChild(args...);
+			}
+
+			/// @brief Attempts to climb up the element hierarchy along the given path.
+			/// If at any point a match is not found, the function returns a null pointer.
+			/// @tparam T Which type the child element should be cast to. If omitted, it will simply return a ir::vgui::Element.
+			template <typename T, typename... Args>
+			[[nodiscard]] T* getChild(std::string key, Args... args) const {
+				return dynamic_cast<T*>(getChild(key)->getChild(args...));
+			}
+
 			/// These used to be aliases for getChild(), but they turned out to be too cumbersome to use practically
 		//	Element* operator[](std::string key) const;
 		//	Element* operator[](const char* key) const;
@@ -60,6 +75,9 @@ namespace ir {
 
 			template <typename T, typename... Args>
 			T* addChildElement(std::string key, Args... args) {
+				if (children_.contains(key)) {
+					LOG_WARN("addChildElement(): A VGUI sub-element with key " + key + " already exists. Information will be lost.");
+				}
 				auto el { std::make_unique<T>(args...) };
 				el->parent_ = this;
 				children_[key] = std::move(el);

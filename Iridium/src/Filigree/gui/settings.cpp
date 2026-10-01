@@ -54,35 +54,35 @@ namespace filigree::gui {
 		}
 		
 		if (watermarkOpacity_) {
-			auto labelO { settings_->getChild<ir::vgui::FramedElement>("FieldWatermark")->getChild<ir::vgui::Label>("LabelO") };
+			auto labelO { settings_->getChild<ir::vgui::Label>("FieldWatermark", "LabelO") };
 			if (labelO) {
 				labelO->setLabel("Opacity: " + std::to_string(watermarkOpacity_->value()));
 			}
 		}
 
 		if (noiseOpacity_) {
-			auto labelO { settings_->getChild<ir::vgui::FramedElement>("FieldNoise")->getChild<ir::vgui::Label>("LabelO") };
+			auto labelO { settings_->getChild<ir::vgui::Label>("FieldNoise", "LabelO") };
 			if (labelO) {
 				labelO->setLabel("Opacity: " + std::to_string(noiseOpacity_->value()));
 			}
 		}
 
-		auto labelD { settings_->getChild<ir::vgui::FramedElement>("FieldDepth")->getChild<ir::vgui::Label>("Label") };
+		auto labelD { settings_->getChild<ir::vgui::Label>("FieldDepth", "Label") };
 		if (labelD) {
 			labelD->setLabel("Color depth: " + std::to_string(colorDepth_->value()) + " bits");
 		}
 
-		auto labelO { settings_->getChild<ir::vgui::FramedElement>("FieldPaths")->getChild<ir::vgui::Label>("LabelOutput") };
+		auto labelO { settings_->getChild<ir::vgui::Label>("FieldPaths", "LabelOutput") };
 		if (labelO) {
 			labelO->setLabel("Output path: " + filigree::shortenPath(pathOutput_, 1));
 		}
 
-		auto labelF { settings_->getChild<ir::vgui::FramedElement>("FieldPaths")->getChild<ir::vgui::Label>("LabelFiligree") };
+		auto labelF { settings_->getChild<ir::vgui::Label>("FieldPaths", "LabelFiligree") };
 		if (labelF) {
 			labelF->setLabel("Filigree path: " + filigree::shortenPath(pathFiligree_, 1));
 		}
 		
-		auto labelS { settings_->getChild<ir::vgui::FramedElement>("FieldPaths")->getChild<ir::vgui::Label>("LabelStamp") };
+		auto labelS { settings_->getChild<ir::vgui::Label>("FieldPaths", "LabelStamp") };
 		if (labelS) {
 			labelS->setLabel("Stamp path: " + filigree::shortenPath(pathStamp_, 1));
 		}
@@ -99,54 +99,33 @@ namespace filigree::gui {
 	}
 	
 	void SettingsUI::createTitle(float yPos) {
-		auto titleField { std::make_unique<ir::vgui::FramedElement>() };
-		titleField->setSize(ir::Vector { 399.f, 30.f })
+		auto field { settings_->addChildElement<ir::vgui::FramedElement>("FieldTitle") };
+		field->setSize(ir::Vector { 399.f, 30.f })
 			.setPosition(ir::Vector { 0.f, yPos })
 			.setColors(sf::Color::White, sf::Color { 32u, 64u, 0u });
-
-			auto label { std::make_unique<ir::vgui::Label>("Configuration") };
-			label->setScale(15.f)
-				.setAnchor(ir::vgui::Label::Anchor::OVER);
-
-			titleField->setChildElement("Label", std::move(label));
-
-		settings_->setChildElement("Title", std::move(titleField));
+		ir::vgui::addLabel(field, "Configuration", ir::vgui::Label::Anchor::OVER);
 	}
 
 	void SettingsUI::createUIResize(float yPos) {
-		auto field { std::make_unique<ir::vgui::FramedElement>() };
+		/// Root
+		auto field { settings_->addChildElement<ir::vgui::FramedElement>("FieldResize") };
 		field->setSize(ir::Vector { 399.f, 60.f })
 			.setPosition(ir::Vector { 0.f, yPos })
 			.setColors(sf::Color::White, sf::Color::Transparent);
 
-			auto check { std::make_unique<ir::vgui::Checkbox>() };
-			check->setChecked(true)
-				.setPosition(ir::Vector { 3.f, 3.f });
-				
-				auto labelCheck { std::make_unique<ir::vgui::Label>("Resize image") };
-				labelCheck->setAnchor(ir::vgui::Label::Anchor::RIGHT);
-
-			auto resize { std::make_unique<ir::vgui::IntField>(1000) };
-			resize->setScale(15.f)
-				.setMaxChars(5u)
-				.setColorUnfocused(sf::Color { 16u, 32u, 0u })
-				.setColorFocused(sf::Color { 48u, 96u, 0u })
-				.setPosition(ir::Vector { 2.f, 32.f })
-				.setSize(ir::Vector { 96.f, 26.f });
-				
-				auto labelResize { std::make_unique<ir::vgui::Label>("Largest dimension") };
-				labelResize->setAnchor(ir::vgui::Label::Anchor::RIGHT);
-
-				check->setChildElement("Label", std::move(labelCheck));
-			field->setChildElement("CheckboxResize", std::move(check));
-
-				resize->setChildElement("Label", std::move(labelResize));
-			field->setChildElement("Resolution", std::move(resize));
+		resizeEnabled_ = field->addChildElement<ir::vgui::Checkbox>("CheckboxResize");
+		resizeEnabled_->setChecked(true)
+			.setPosition(ir::Vector { 3.f, 3.f });
+		ir::vgui::addLabel(resizeEnabled_, "Resize image", ir::vgui::Label::Anchor::RIGHT);
 		
-		settings_->setChildElement("FieldResize", std::move(field));
-
-		resizeEnabled_ = settings_->getChild<ir::vgui::FramedElement>("FieldResize")->getChild<ir::vgui::Checkbox>("CheckboxResize");
-		resizeSize_ = settings_->getChild<ir::vgui::FramedElement>("FieldResize")->getChild<ir::vgui::IntField>("Resolution");
+		resizeSize_ = field->addChildElement<ir::vgui::IntField>("Resolution", 1000);
+		resizeSize_->setScale(15.f)
+			.setMaxChars(5u)
+			.setColorUnfocused(sf::Color { 16u, 32u, 0u })
+			.setColorFocused(sf::Color { 48u, 96u, 0u })
+			.setPosition(ir::Vector { 2.f, 32.f })
+			.setSize(ir::Vector { 96.f, 26.f });
+		ir::vgui::addLabel(resizeSize_, "Largest dimension", ir::vgui::Label::Anchor::RIGHT);
 	}
 
 	void SettingsUI::createUIWatermark(float yPos) {
@@ -267,21 +246,45 @@ namespace filigree::gui {
 	}
 
 	void SettingsUI::createUIStartButton(float yPos) {
-		auto button { std::make_unique<ir::vgui::FramedElement>() };
-		button->setSize(ir::Vector { 393.f, 53.f })
-			.setPosition(ir::Vector { 3.f, yPos + 3.f })
+		ir::Vector buttonSize { 393.f, 53.f };
+		ir::Vector buttonPos { 3.f, 3.f };
+
+		auto field { settings_->addChildElement<ir::vgui::FramedElement>("FieldButton") };
+		field->setPosition(ir::Vector { 0.f, yPos })
+			.setSize(ir::Vector { 399.f, 60.f })
+			.setColors(sf::Color::Transparent, sf::Color::Transparent);
+
+		auto button { field->addChildElement<ir::vgui::FramedElement>("ButtonStart") };
+		button->setSize(buttonSize)
+			.setPosition(buttonPos)
 			.setColors(sf::Color::White, sf::Color { 32u, 64u, 0u })
-			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::START_FILE_PROCESSING); });
+			.registerClickEvent([&]() { evtQueue_->add(filigree::Event::START_FILE_PROCESSING); })
+			.registerClickEvent(
+				[button, buttonSize, buttonPos] { 
+					button->setPosition(buttonPos + ir::Vector { 5.f, 5.f });
+					button->setSize(buttonSize - ir::Vector { 10.f, 10.f });
+				}
+			).registerIdleEvent(
+				[button, buttonSize, buttonPos] {
+					ir::Vector posItp { ir::math::interpolate(button->position().x, buttonPos.x, 0.1f), ir::math::interpolate(button->position().y, buttonPos.y, 0.1f) };
+					ir::Vector sizeItp { ir::math::interpolate(button->size().x, buttonSize.x, 0.1f), ir::math::interpolate(button->size().y, buttonSize.y, 0.1f) };
+					button->setPosition(posItp);
+					button->setSize(sizeItp);
+				}
+			).registerHoverEvent(
+				[button, buttonSize, buttonPos] {
+					ir::Vector posItp { ir::math::interpolate(button->position().x, buttonPos.x, 0.1f), ir::math::interpolate(button->position().y, buttonPos.y, 0.1f) };
+					ir::Vector sizeItp { ir::math::interpolate(button->size().x, buttonSize.x, 0.1f), ir::math::interpolate(button->size().y, buttonSize.y, 0.1f) };
+					button->setPosition(posItp);
+					button->setSize(sizeItp);
+				}
+			);
 
-			auto label { std::make_unique<ir::vgui::Label>("Start processing") };
-			label->setScale(24.f)
-				.setAnchor(ir::vgui::Label::Anchor::OVER);
+		ir::vgui::addLabel(button, "Start processing", ir::vgui::Label::Anchor::OVER)
+			->setScale(24.f);
 
-			button->setChildElement("Label", std::move(label));
+		startProcessingButton_ = button;
 
-		settings_->setChildElement("ButtonStart", std::move(button));
-
-		startProcessingButton_ = settings_->getChild<ir::vgui::FramedElement>("ButtonStart");
 	}
 
 #pragma region Settings accessors

@@ -101,6 +101,9 @@ namespace ir::vgui {
 
 	ir::vgui::Element& Element::setChildElement(std::string key, std::unique_ptr<ir::vgui::Element> child) {
 		if (child) {
+			if (children_.contains(key)) {
+				LOG_WARN("addChildElement(): A VGUI sub-element with key " + key + " already exists. Information will be lost.");
+			}
 			child->parent_ = this;
 			children_[key] = std::move(child);
 			children_[key]->resizeRectangle();

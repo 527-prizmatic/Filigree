@@ -33,19 +33,11 @@ namespace ir::vgui {
 	void Checkbox::renderCheckbox(ir::render::VertexRenderer& renderer) const {
 		ir::Vector absPos { absolutePosition() };
 
-		renderer.reset();
-		renderer.addPoint(absPos + ir::Vector { 0.f, size_.y * .5f }, clrFrame_);
-		renderer.addPoint(absPos + ir::Vector { size_.x * .5f, size_.y }, clrFrame_);
-
-		renderer.addPoint(absPos + ir::Vector { size_.x * .5f, size_.y }, clrFrame_);
-		renderer.addPoint(absPos + ir::Vector { size_.x, size_.y * .5f }, clrFrame_);
-
-		renderer.addPoint(absPos + ir::Vector { size_.x, size_.y * .5f }, clrFrame_);
-		renderer.addPoint(absPos + ir::Vector { size_.x * .5f, 0.f }, clrFrame_);
-
-		renderer.addPoint(absPos + ir::Vector { size_.x * .5f, 0.f }, clrFrame_);
-		renderer.addPoint(absPos + ir::Vector { 0.f, size_.y * .5f }, clrFrame_);
-
+		renderer.reset(sf::PrimitiveType::TriangleFan);
+		renderer.addPoint(absPos + ir::Vector { 4.f, 5.f }, clrFrame_);
+		renderer.addPoint(absPos + ir::Vector { 4.f, size_.y - 4.f }, clrFrame_);
+		renderer.addPoint(absPos + ir::Vector { size_.x - 5.f, size_.y - 4.f }, clrFrame_);
+		renderer.addPoint(absPos + ir::Vector { size_.x - 5.f, 5.f }, clrFrame_);
 		renderer.flush();
 	}
 

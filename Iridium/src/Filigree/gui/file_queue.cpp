@@ -126,7 +126,7 @@ namespace filigree::gui {
 
 	void FileQueue::updateFileList() {
 		for (size_t i = 0; i < 18; i++) { /// 360 px / 20 px per field
-			auto field { fileQueue_->getChild(std::string { "Field" } + std::to_string(i))->getChild<ir::vgui::Label>("Label") };
+			auto field { fileQueue_->getChild<ir::vgui::Label>(std::string { "Field" } + std::to_string(i), "Label") };
 			if (i + listOffset_ < watchedQueue_->size()) {
 				auto path { watchedQueue_->at(i + listOffset_) };
 				field->setLabel(filigree::shortenPath(path, 1));
