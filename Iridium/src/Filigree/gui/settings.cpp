@@ -176,11 +176,11 @@ namespace filigree::gui {
 		ir::vgui::addLabel(stampTREnabled_, "Top right", ir::vgui::Label::Anchor::LEFT);
 
 		stampBLEnabled_ = field->addChildElement<ir::vgui::Checkbox>("CheckboxBL");
-		stampBLEnabled_->setPosition(ir::Vector { 3.f, 63.f });
+		stampBLEnabled_->setPosition(ir::Vector { 3.f, 93.f });
 		ir::vgui::addLabel(stampBLEnabled_, "Bottom left", ir::vgui::Label::Anchor::RIGHT);
 
 		stampBREnabled_ = field->addChildElement<ir::vgui::Checkbox>("CheckboxBR");
-		stampBREnabled_->setPosition(ir::Vector { 372.f, 63.f });
+		stampBREnabled_->setPosition(ir::Vector { 372.f, 93.f });
 		ir::vgui::addLabel(stampBREnabled_, "Bottom right", ir::vgui::Label::Anchor::LEFT);
 
 		/// Opacity slider

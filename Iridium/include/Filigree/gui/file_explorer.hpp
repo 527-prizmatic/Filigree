@@ -7,6 +7,8 @@
 #include <rendering/vertex_renderer.hpp>
 #include <vgui/element.hpp>
 
+#include "filepath_funcs.hpp"
+
 namespace filigree::gui {
 	class FileExplorer {
 	public:
@@ -29,13 +31,8 @@ namespace filigree::gui {
 		void clearHistoryNext();
 
 	private:
-	//	void createMinimizeButton();
-	//	void createExitButton();
-	//	void createTitle();
-
 		void createPathBar();
 		void createFileFields();
-		static std::string concisePath(std::filesystem::path& path);
 
 		void populateFileList();
 		void updateFileList();

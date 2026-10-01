@@ -155,9 +155,9 @@ namespace filigree::gui {
 	void FileExplorer::setPath(std::filesystem::path path) {
 		activeDir_ = path;
 
-		auto label { fileExplorer_->getChild("PathBar")->getChild<ir::vgui::Label>("PathLabel") };
+		auto label { fileExplorer_->getChild("PathBar")->getChild<ir::vgui::Label>("LabelPath") };
 		if (label) {
-			label->setLabel(concisePath(activeDir_));
+			label->setLabel(filigree::shortenPath(activeDir_, 2));
 		}
 
 		listOffset_ = 0;
@@ -236,7 +236,7 @@ namespace filigree::gui {
 			.setSize(ir::Vector { 480.f, 30.f });
 
 		/// Window title
-		auto labelPath { fileExplorer_->addChildElement<ir::vgui::Label>("LabelPath", concisePath(activeDir_)) };
+		auto labelPath { bar->addChildElement<ir::vgui::Label>("LabelPath", filigree::shortenPath(activeDir_, 2)) };
 		labelPath->setPosition(ir::Vector { 6.f, 6.f });
 		
 		/// Navigation buttons (still use the old nesting system for now, due to makeIconButton limitations)
@@ -259,46 +259,14 @@ namespace filigree::gui {
 
 	void FileExplorer::createFileFields() {
 		for (size_t i = 0; i < 22; i++) { /// 690 px / 30 px per field
-			auto el { std::make_unique<ir::vgui::FramedElement>() };
+			auto el { fileExplorer_->addChildElement<ir::vgui::FramedElement>(std::string { "Field" } + std::to_string(i)) };
 			el->setPosition(ir::Vector { 0.f, static_cast<float>(i + 1) * 30.f })
 				.setSize(ir::Vector { 480.f, 30.f })
-				.setColors(sf::Color { 0u, 128u, 255u, 32u }, i % 2 ? sf::Color::Transparent :  sf::Color { 255u, 255u, 255u, 8u });
+				.setColors(sf::Color { 0u, 128u, 255u, 32u }, i % 2 ? sf::Color::Transparent :  sf::Color { 255u, 255u, 255u, 8u })
+				.registerClickEvent([&]() { evtQueue_->add(filigree::Event::SELECT_FILE); });;
 
-			auto label { std::make_unique<ir::vgui::Label>() };
+			auto label { el->addChildElement<ir::vgui::Label>("Label", "") };
 			label->setPosition(ir::Vector { 6.f, 5.f });
-
-			el->setChildElement("Label", std::move(label));
-
-			el->registerClickEvent([&]() { evtQueue_->add(filigree::Event::SELECT_FILE); });
-			
-			fileExplorer_->setChildElement(std::string { "Field" } + std::to_string(i), std::move(el));
 		}
-	}
-
-	std::string FileExplorer::concisePath(std::filesystem::path& path) {
-		constexpr static std::string separator { " / " };
-		std::string concise { };
-
-		auto nameOrRoot = [] (std::filesystem::path path) {
-			if (path.has_relative_path()) {
-				return path.relative_path().filename().string();
-			}
-			else {
-				return path.root_name().string();
-			}
-		};
-
-		if (path.parent_path().parent_path().has_relative_path()) {
-			concise += "..." + separator;
-		}
-		if (path.parent_path().has_relative_path()) {
-			concise += nameOrRoot(path.parent_path().parent_path()) + separator;
-		}
-		if (path.has_relative_path()) {
-			concise += nameOrRoot(path.parent_path()) + separator;
-		}
-		concise += nameOrRoot(path) + separator;
-
-		return concise;
 	}
 }

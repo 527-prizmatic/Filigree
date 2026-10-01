@@ -103,7 +103,7 @@ namespace filigree::gui {
 			.setPosition(ir::Vector { 0.f, 0.f })
 			.setColors(sf::Color::White, sf::Color::Transparent);
 
-		auto labelTitle { field->addChildElement<ir::vgui::Label>("Processing queue") };
+		auto labelTitle { field->addChildElement<ir::vgui::Label>("Label", "Processing queue") };
 		labelTitle->setPosition(ir::Vector { 6.f, 6.f });
 		
 		auto buttonClear { ir::vgui::makeIconButton(ir::Vector { 26.f, 26.f }, "trash", sf::Color(224u, 64u, 128u)) };
