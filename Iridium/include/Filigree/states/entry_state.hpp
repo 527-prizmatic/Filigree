@@ -5,6 +5,8 @@
 
 #include <state.hpp>
 #include <vgui/label.hpp>
+#include <assets/asset_manager.hpp>
+#include <assets/sound_manager.hpp>
 
 #include "events.hpp"
 #include "gui/mouse_cursor.hpp"
@@ -16,9 +18,13 @@
 #include "gui/context_menu.hpp"
 #include "image_processor.hpp"
 
+
 class EntryState : public ir::StateBase<EntryState> {
 public:
 	void onInitialize() {
+		sndBell_ = context_->assetManager->registerSound("bell.ogg");
+		sndError_ = context_->assetManager->registerSound("error.ogg");
+
 		context_->appWindow->setTitle("Filigree -- Image Watermarker");
 
 		context_->appWindow->enableMouseCursor(false);
@@ -207,10 +213,15 @@ public:
 								try {
 									processor_->loadSettings(settings_->assembleSettings());
 									processor_->process(sentQueue);
+
+									context_->soundManager->playSound(sndBell_);
 								}
 								catch (...) {
 									LOG_ERROR("Unspecified error during image processing");
+									
+									context_->soundManager->playSound(sndError_);
 								}
+								
 								evtQueue_.setOpen(true);
 								preview_->setProgressBarVisibility(false);
 								mouseCursor_->base();
@@ -322,6 +333,9 @@ private:
 	std::unique_ptr<filigree::Processor> processor_;
 
 	std::vector<std::filesystem::path> processingQueue_;
+
+	ir::SoundHandle sndBell_ {};
+	ir::SoundHandle sndError_ {};
 };
 
 #endif // FILIGREE_STATE_ENTRY_HPP_
